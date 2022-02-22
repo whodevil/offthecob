@@ -13,7 +13,7 @@ jobs:
     - name: install pre-reqs
       run: |
         sudo apt-get update
-        sudo apt-get install python python-pip npm yarn -y
+        sudo apt-get install python3 python3-pip npm yarn -y
         sudo pip install awscli
     - name: yarn install
       run: cd ui && yarn install
