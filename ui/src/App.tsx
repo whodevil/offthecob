@@ -4,7 +4,6 @@ import { BrowserRouter as Router, Route } from 'react-router-dom'
 import { ApolloProvider } from '@apollo/react-hooks'
 import './App.css'
 import Home from './Home'
-import Graphql from './Graphql'
 
 import ApolloClient from 'apollo-boost'
 
@@ -26,7 +25,6 @@ const App: React.FC = () => {
 
         <div>
           <Route path="/" exact component={Home}/>
-          <Route path="/graphiql" component={Graphql}/>
         </div>
 
       </Router>
