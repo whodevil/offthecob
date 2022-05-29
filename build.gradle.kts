@@ -8,9 +8,9 @@ plugins {
 }
 
 dependencies {
-    implementation(libs.bundles.apache.commons)
+    implementation("commons-lang:commons-lang:+")
     implementation("org.jetbrains.kotlin:kotlin-stdlib-jdk8")
-    implementation("org.jetbrains.kotlinx:kotlinx-html-jvm:0.6.10")
+    implementation("org.jetbrains.kotlinx:kotlinx-html-jvm:0.7.5")
     implementation(libs.bundles.guice)
     implementation(libs.bundles.logging)
     implementation("com.sparkjava:spark-core:+")
