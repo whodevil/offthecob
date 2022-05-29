@@ -32,7 +32,7 @@ jobs:
     - name: upload to s3
       run: |
         aws s3 cp build/${{steps.archive_name.outputs.name}} s3://theagainagain-assets/${{steps.archive_name.outputs.name}}
-        aws s3 cp build/${GITHUB_REF#refs/heads/} s3://theagainagain-assets/build/${{steps.branch_name.outputs.name}}
+        aws s3 cp build/${{steps.branch_name.outputs.name}} s3://theagainagain-assets/build/${{steps.branch_name.outputs.name}}
       env:
         AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
         AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
