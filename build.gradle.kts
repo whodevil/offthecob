@@ -29,7 +29,7 @@ application {
 
 jib {
     from {
-        image = "registry.hub.docker.com/azul/zulu-openjdk-debian:11-latest"
+        image = "azul/zulu-openjdk-debian:11-latest"
     }
     to {
         image = if(project.hasProperty("toImage")) {
