@@ -12,6 +12,10 @@ env:
 jobs:
   jib:
     uses: ./.github/workflows/jib.yaml
+    secrets:
+      GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      DOCKER_PASSWORD: ${{ secrets.DOCKER_PASSWORD }}
+      DOCKER_USERNAME: ${{ secrets.DOCKER_USERNAME }}
   terraform:
     name: 'Terraform-plan'
     runs-on: ubuntu-latest
