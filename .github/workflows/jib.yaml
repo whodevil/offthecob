@@ -1,4 +1,4 @@
-name "jib"
+name: "jib"
 on:
   workflow_call:
     outputs:
