@@ -29,7 +29,7 @@ application {
 
 jib {
     from {
-        image = "registry.hub.docker.com/azul/zulu-openjdk-debian:11-latest"
+        image = "489478819445.dkr.ecr.us-west-2.amazonaws.com/amazoncorretto:11"
     }
     to {
         image = if(project.hasProperty("toImage")) {
