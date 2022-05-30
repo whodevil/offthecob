@@ -30,7 +30,7 @@ dependencyResolutionManagement {
 
     versionCatalogs {
         create("libs") {
-            from("info.offthecob.jvm.platform:catalog:0.0.12")
+            from("info.offthecob.jvm.platform:catalog:v0.0.12")
         }
     }
 }

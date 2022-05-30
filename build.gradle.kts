@@ -3,6 +3,7 @@ plugins {
     alias(libs.plugins.kotlin.jvm)
     alias(libs.plugins.kotlin.allopen)
     alias(libs.plugins.dependencycheck)
+    alias(libs.plugins.jib)
     application
     groovy
 }
@@ -24,6 +25,30 @@ dependencies {
 
 application {
     mainClass.set("theagainagain.MainKt")
+}
+
+if(project.hasProperty("tags")) {
+    val tags: String by project
+    println("########### tags: $tags")
+}
+
+if(project.hasProperty("labels")) {
+    val labels: String by project
+    println("########### labels: $labels")
+}
+
+jib {
+    from {
+        image = "azul/zulu-openjdk-debian:11-latest"
+    }
+    to {
+        image = if(project.hasProperty("toImage")) {
+            val toImage: String by project
+            toImage
+        } else {
+            "localhost"
+        }
+    }
 }
 
 tasks {
