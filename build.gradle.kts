@@ -27,19 +27,9 @@ application {
     mainClass.set("theagainagain.MainKt")
 }
 
-if(project.hasProperty("tags")) {
-    val tags: String by project
-    println("########### tags: $tags")
-}
-
-if(project.hasProperty("labels")) {
-    val labels: String by project
-    println("########### labels: $labels")
-}
-
 jib {
     from {
-        image = "azul/zulu-openjdk-debian:11-latest"
+        image = "azul/zulu-openjdk:11.0.14.1-11.54.25"
     }
     to {
         image = if(project.hasProperty("toImage")) {
@@ -47,6 +37,12 @@ jib {
             toImage
         } else {
             "localhost"
+        }
+        tags = if(project.hasProperty("tag")) {
+            val tag: String by project
+            setOf(tag)
+        } else {
+            setOf("latest")
         }
     }
 }
