@@ -82,8 +82,11 @@ jobs:
         run: cd ui && yarn install
       - name: yarn build
         run: cd ui && yarn build
+      - name: Set outputs
+        id: vars
+        run: echo "::set-output name=sha_short::$(git rev-parse --short HEAD)"
       - name: archive name
-        run: echo "##[set-output name=name;]$(echo theagainagain-${GITHUB_SHA}.tar.gz)"
+        run: echo "##[set-output name=name;]$(echo theagainagain-${{ steps.vars.outputs.sha_short }}.tar.gz)"
         id: archive_name
       - name: branch name
         run: echo "##[set-output name=name;]$(echo ${GITHUB_REF#refs/heads/} | sed 's/\//_/g')"

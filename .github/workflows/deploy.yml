@@ -19,6 +19,34 @@ jobs:
       packages: write
     steps:
       - uses: actions/checkout@v1
+      - name: install pre-reqs
+        run: |
+          sudo apt-get update
+          sudo apt-get install python3 python3-pip npm yarn -y
+          sudo pip install awscli
+      - name: yarn install
+        run: cd ui && yarn install
+      - name: yarn build
+        run: cd ui && yarn build
+      - name: Set outputs
+        id: vars
+        run: echo "::set-output name=sha_short::$(git rev-parse --short HEAD)"
+      - name: archive name
+        run: echo "##[set-output name=name;]$(echo theagainagain-${{ steps.vars.outputs.sha_short }}.tar.gz)"
+        id: archive_name
+      - name: branch name
+        run: echo "##[set-output name=name;]$(echo ${GITHUB_REF#refs/heads/} | sed 's/\//_/g')"
+        id: branch_name
+      - name: tar ui
+        run: mkdir build && tar -czvf build/${{steps.archive_name.outputs.name}} ui/build
+      - name: upload pin file
+        run: echo "${{steps.archive_name.outputs.name}}" > build/${{steps.branch_name.outputs.name}}
+      - name: upload to s3
+        run: |
+          cp -r ui/build build/${{steps.vars.outputs.sha_short}} s3://theagainagain-assets/ --recursive
+          aws s3 cp build/${{steps.vars.outputs.sha_short}} 
+          aws s3 cp build/${{steps.archive_name.outputs.name}} s3://theagainagain-assets/${{steps.archive_name.outputs.name}}
+          aws s3 cp build/${{steps.branch_name.outputs.name}} s3://theagainagain-assets/build/${{steps.branch_name.outputs.name}}
       - name: Set up JDK 11
         uses: actions/setup-java@v1
         with:
@@ -34,9 +62,6 @@ jobs:
         with:
           username: ${{ secrets.DOCKER_USERNAME }}
           password: ${{ secrets.DOCKER_PASSWORD }}
-      - name: Set outputs
-        id: vars
-        run: echo "::set-output name=sha_short::$(git rev-parse --short HEAD)"
       - name: Build with Gradle
         run: ./gradlew jib -PtoImage=${{ env.REGISTRY }}/${{ env.IMAGE_NAME }} -Ptag=${{ steps.vars.outputs.sha_short }}
       - uses: akhileshns/heroku-deploy@v3.12.12 # This is the action
