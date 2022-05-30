@@ -29,7 +29,7 @@ application {
 
 jib {
     from {
-        image = "azul/zulu-openjdk-debian:11-latest"
+        image = "azul/zulu-openjdk:11.0.14.1-11.54.25"
     }
     to {
         image = if(project.hasProperty("toImage")) {
