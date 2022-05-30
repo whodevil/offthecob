@@ -11,6 +11,8 @@ env:
   AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
   AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
 jobs:
+  jib:
+    uses: ./.github/workflows/jib.yaml
   heroku:
     name: "heroku deploy"
     runs-on: ubuntu-latest
@@ -22,7 +24,7 @@ jobs:
         run: echo "::set-output name=sha_short::$(git rev-parse --short HEAD)"
       - uses: akhileshns/heroku-deploy@v3.12.12 # This is the action
         env:
-          IMAGE: ghcr.io/${{ github.repository }}:${{ steps.vars.outputs.sha_short }}
+          IMAGE: ${{ needs.jib.outputs.image }}
         with:
           heroku_api_key: ${{secrets.HEROKU_API_KEY}}
           heroku_app_name: "theagainagain" #Must be unique in Heroku
