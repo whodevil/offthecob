@@ -1,6 +1,11 @@
 name: PR Builder
 on:
   - pull_request
+env:
+  REGISTRY: ghcr.io
+  IMAGE_NAME: ${{ github.repository }}
+  USERNAME: ${{ github.actor }}
+  GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 jobs:
   jib:
     name: 'Publish with jib'
