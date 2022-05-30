@@ -1,1 +1,2 @@
-FROM ghcr.io/whodevil/theagainagain:20aadd1
+ARG IMAGE
+FROM $IMAGE
