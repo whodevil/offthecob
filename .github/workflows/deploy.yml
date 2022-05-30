@@ -25,7 +25,7 @@ jobs:
           IMAGE: ghcr.io/${{ github.repository }}:${{ steps.vars.outputs.sha_short }}
         with:
           heroku_api_key: ${{secrets.HEROKU_API_KEY}}
-          heroku_app_name: "theagainagain-stage" #Must be unique in Heroku
+          heroku_app_name: "theagainagain-staging" #Must be unique in Heroku
           heroku_email: ${{ secrets.HEROKU_EMAIL }}
           usedocker: true
           docker_heroku_process_type: web
