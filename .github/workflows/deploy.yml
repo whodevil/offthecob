@@ -16,7 +16,6 @@ jobs:
   jib:
     uses: "./.github/workflows/JVM.yml"
     with:
-      GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       DOCKER_USERNAME: ${{ secrets.DOCKER_USERNAME }}
       DOCKER_PASSWORD: ${{ secrets.DOCKER_PASSWORD }}
       registry: ghcr.io
