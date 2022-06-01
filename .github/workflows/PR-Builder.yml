@@ -7,9 +7,10 @@ jobs:
   jib:
     uses: "./.github/workflows/JVM.yml"
     with:
+      registry: ghcr.io
+    secrets:
       DOCKER_USERNAME: ${{ secrets.DOCKER_USERNAME }}
       DOCKER_PASSWORD: ${{ secrets.DOCKER_PASSWORD }}
-      registry: ghcr.io
   terraform:
     name: 'Terraform-plan'
     runs-on: ubuntu-latest
