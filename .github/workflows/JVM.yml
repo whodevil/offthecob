@@ -45,4 +45,7 @@ jobs:
           username: ${{ secrets.DOCKER_USERNAME }}
           password: ${{ secrets.DOCKER_PASSWORD }}
       - name: Build with Gradle
+        env:
+          GITHUB_USERNAME: whodevil
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: ./gradlew jib -PtoImage=${{ inputs.registry }}/${{ github.repository }} -Ptag=${{ steps.vars.outputs.sha_short }}

@@ -9,7 +9,7 @@
 
 rootProject.name = "theagainagain"
 
-val gprUsername = extra.has("gpr.user").let { if (it) extra.get("gpr.user") as String else System.getenv("USERNAME") as String}
+val gprUsername = extra.has("gpr.user").let { if (it) extra.get("gpr.user") as String else System.getenv("GITHUB_USERNAME") as String}
 val gprToken = extra.has("gpr.key").let { if (it) extra.get("gpr.key") as String else System.getenv("GITHUB_TOKEN") as String}
 
 dependencyResolutionManagement {
