@@ -15,6 +15,7 @@ jobs:
       DOCKER_PASSWORD: ${{ secrets.DOCKER_PASSWORD }}
   terraform:
     uses: ./.github/workflows/terraform.yml
+    needs: [ui]
     with:
       apply: true
       environment: staging
