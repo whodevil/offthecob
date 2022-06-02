@@ -33,7 +33,7 @@ jobs:
         with:
           name: ${{ inputs.uiArtifactName }}
           path: terraform/ui/
-      - run:  ls -R
+      - run: ls -l ui/
       - name: 'Terraform Setup'
         uses: hashicorp/setup-terraform@v2
         with:
