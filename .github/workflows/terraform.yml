@@ -33,7 +33,12 @@ jobs:
         with:
           name: ${{ inputs.uiArtifactName }}
           path: terraform/ui/
+      - run: tar -xzvf ui/${{ inputs.uiArtifactName }}
       - run: ls -l ui/
+      - run: ls -l
+      - run: |
+          sudo apt-get update
+          sudo apt-get -y install skopeo
       - name: 'Terraform Setup'
         uses: hashicorp/setup-terraform@v2
         with:
