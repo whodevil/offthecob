@@ -1,0 +1,42 @@
+name: "Terraform"
+on:
+  workflow_call:
+    secrets:
+      AWS_ACCESS_KEY_ID:
+        required: true
+      AWS_SECRET_ACCESS_KEY:
+        required: true
+    inputs:
+      environment:
+        required: true
+        type: choice
+        options:
+        - staging
+        - production
+      apply:
+        required: true
+        type: boolean
+jobs:
+  terraform:
+    env:
+      AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+      AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+      AWS_REGION: 'us-west-2'
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: terraform
+    steps:
+      - name: 'Checkout'
+        uses: actions/checkout@master
+      - name: 'Terraform Setup'
+        uses: hashicorp/setup-terraform@v2
+        with:
+          terraform_version: 1.2.0
+      - run: terraform validate
+      - run: terraform fmt
+      - run: terraform init
+      - run: terraform workspace select ${{ github.events.input.environment }}
+      - run: terraform plan
+      - run: terraform apply -auto-approve
+        if: github.events.input.apply == true
