@@ -11,6 +11,12 @@ jobs:
     runs-on: ubuntu-latest
     outputs:
       archive: ${{steps.archive_name.outputs.name}}
+    defaults:
+      run:
+        working-directory: ui
+    permissions:
+      contents: read
+      packages: write
     steps:
       - uses: actions/checkout@v1
       - name: install pre-reqs
@@ -18,22 +24,14 @@ jobs:
           sudo apt-get update
           sudo apt-get install python3 python3-pip npm yarn -y
           sudo pip install awscli
-      - name: yarn install
-        run: cd ui && yarn install
-      - name: yarn build
-        run: cd ui && yarn build
-      - name: Set outputs
-        id: vars
+      - run: yarn install
+      - run: yarn build
+      - id: vars
         run: echo "::set-output name=sha_short::$(git rev-parse --short HEAD)"
-      - name: archive name
+      - id: archive_name
         run: echo "##[set-output name=name;]$(echo theagainagain-${{ steps.vars.outputs.sha_short }}.tar.gz)"
-        id: archive_name
-      - name: branch name
-        run: echo "##[set-output name=name;]$(echo ${GITHUB_REF#refs/heads/} | sed 's/\//_/g')"
-        id: branch_name
-      - name: tar ui
-        run: mkdir build && tar -czvf build/${{steps.archive_name.outputs.name}} ui/build
+      - run: tar -czvf ${{steps.archive_name.outputs.name}} ./build
       - uses: actions/upload-artifact@v3
         with:
           name: ${{steps.archive_name.outputs.name}}
-          path: build/${{steps.archive_name.outputs.name}}
+          path: ui/${{steps.archive_name.outputs.name}}
