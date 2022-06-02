@@ -33,7 +33,7 @@ jobs:
       - run: terraform fmt
       - run: terraform init
       - run: terraform validate
-      - run: terraform workspace select ${{ github.events.input.environment }}
+      - run: terraform workspace select ${{ inputs.environment }}
       - run: terraform plan
       - run: terraform apply -auto-approve
-        if: github.events.input.apply == true
+        if: inputs.apply == true
