@@ -13,6 +13,9 @@ on:
       apply:
         required: true
         type: boolean
+      uiArtifactName:
+        required: true
+        type: string
 jobs:
   terraform:
     env:
@@ -26,6 +29,11 @@ jobs:
     steps:
       - name: 'Checkout'
         uses: actions/checkout@master
+      - uses: actions/download-artifact@v3
+        with:
+          name: ${{ inputs.uiArtifactName }}
+          path: terraform/ui/
+      - run:  ls -R
       - name: 'Terraform Setup'
         uses: hashicorp/setup-terraform@v2
         with:
