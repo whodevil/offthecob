@@ -3,9 +3,9 @@ on:
     outputs:
       archive:
         description: "a tar.gz of the UI artifact uploaded to github artifacts repo"
-        value: ${{ jobs.ui.outputs.archive }}
+        value: ${{ jobs.build.outputs.archive }}
 jobs:
-  ui:
+  build:
     runs-on: ubuntu-latest
     outputs:
       archive: ${{steps.archive_name.outputs.name}}
