@@ -9,10 +9,7 @@ on:
     inputs:
       environment:
         required: true
-        type: choice
-        options:
-        - staging
-        - production
+        type: string
       apply:
         required: true
         type: boolean
