@@ -4,12 +4,18 @@ on:
     branches:
       - master
 jobs:
+  createEcr:
+    uses: ./.github/workflows/create-ecr.yml
+    secrets:
+      AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+      AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
   ui:
     uses: "./.github/workflows/UI.yml"
   jvm:
     uses: "./.github/workflows/JVM.yml"
+    needs: [createEcr]
     with:
-      registry: ghcr.io
+      repo: ${{ needs.createEcr.outputs.repo }}
     secrets:
       DOCKER_USERNAME: ${{ secrets.DOCKER_USERNAME }}
       DOCKER_PASSWORD: ${{ secrets.DOCKER_PASSWORD }}
