@@ -13,6 +13,12 @@ on:
       apply:
         required: true
         type: boolean
+      uiArtifactName:
+        required: true
+        type: string
+      image:
+        required: true
+        type: string
 jobs:
   terraform:
     env:
@@ -24,10 +30,17 @@ jobs:
       run:
         working-directory: terraform
     steps:
-      - name: 'Checkout'
-        uses: actions/checkout@master
-      - name: 'Terraform Setup'
-        uses: hashicorp/setup-terraform@v2
+      - uses: actions/checkout@master
+      - uses: actions/download-artifact@v3
+        with:
+          name: ${{ inputs.uiArtifactName }}
+          path: terraform/
+      - run: tar -xzvf ${{ inputs.uiArtifactName }}
+      - run: ls -l build
+      - run: |
+          sudo apt-get update
+          sudo apt-get -y install skopeo
+      - uses: hashicorp/setup-terraform@v2
         with:
           terraform_version: 1.2.0
       - run: terraform fmt
