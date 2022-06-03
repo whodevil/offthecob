@@ -6,8 +6,6 @@ jobs:
     uses: "./.github/workflows/UI.yml"
   jvm:
     uses: "./.github/workflows/JVM.yml"
-    with:
-      repo: ${{ needs.createEcr.outputs.repo }}
     secrets:
       DOCKER_USERNAME: ${{ secrets.DOCKER_USERNAME }}
       DOCKER_PASSWORD: ${{ secrets.DOCKER_PASSWORD }}
