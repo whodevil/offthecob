@@ -27,6 +27,7 @@ jobs:
       AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
       AWS_REGION: 'us-west-2'
       TF_VAR_DOMAIN_NAME: ${{ secrets.TF_VAR_DOMAIN_NAME }}
+      TF_VAR_API_IMAGE: ${{ inputs.image }}
     runs-on: ubuntu-latest
     defaults:
       run:
@@ -38,9 +39,6 @@ jobs:
           name: ${{ inputs.uiArtifactName }}
           path: terraform/
       - run: tar -xzf ${{ inputs.uiArtifactName }}
-      - run: |
-          sudo apt-get update
-          sudo apt-get -y install skopeo
       - uses: hashicorp/setup-terraform@v2
         with:
           terraform_version: 1.2.0

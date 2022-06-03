@@ -4,11 +4,6 @@ on:
     branches:
       - master
 jobs:
-  createEcr:
-    uses: ./.github/workflows/create-ecr.yml
-    secrets:
-      AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
-      AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
   ui:
     uses: "./.github/workflows/UI.yml"
   jvm:
@@ -21,14 +16,24 @@ jobs:
       DOCKER_PASSWORD: ${{ secrets.DOCKER_PASSWORD }}
       AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
       AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+  imageSyncStaging:
+    needs: [ jvm ]
+    uses: ./.github/workflows/image-sync.yml
+    with:
+      environment: staging
+      tag: ${{ needs.jvm.outputs.tag }}
+      image: ${{ needs.jvm.outputs.image }}
+    secrets:
+      AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+      AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
   staging:
     uses: ./.github/workflows/terraform.yml
-    needs: [ui, jvm]
+    needs: [ui, imageSyncStaging]
     with:
       apply: true
       environment: staging
       uiArtifactName: ${{ needs.ui.outputs.archive }}
-      image: ${{ needs.ui.outputs.image }}
+      image: ${{ needs.imageSyncStaging.outputs.repo }}
     secrets:
       AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
       AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}

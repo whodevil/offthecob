@@ -1,0 +1,54 @@
+on:
+  workflow_call:
+    inputs:
+      environment:
+        type: string
+        required: true
+      tag:
+        type: string
+        required: true
+      image:
+        required: true
+        type: string
+    secrets:
+      AWS_ACCESS_KEY_ID:
+        required: true
+      AWS_SECRET_ACCESS_KEY:
+        required: true
+    outputs:
+      repo:
+        value: ${{ jobs.build.outputs.repo }}
+jobs:
+  build:
+    environment: ${{ inputs.environment }}
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      packages: read
+    outputs:
+      repo: ${{ steps.image.outputs.id }}
+    steps:
+      - uses: aws-actions/configure-aws-credentials@v1
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: us-west-2
+      - run: |
+          curl "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip" -o "awscliv2.zip"
+          unzip awscliv2.zip
+          sudo ./aws/install
+          sudo apt-get update
+          sudo apt-get -y install skopeo
+      - run: aws ecr create-repository --repository-name ${{ github.repository }}-${{ inputs.environment }} || true
+      - name: Log in to GitHub Registry
+        uses: docker/login-action@f054a8b539a109f9f41c372932f1ae047eff08c9
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+      - name: Login to Amazon ECR
+        id: login-ecr
+        uses: aws-actions/amazon-ecr-login@v1
+      - run: echo "::set-output name=id::${{ steps.login-ecr.outputs.registry }}/${{ github.repository }}-${{ inputs.environment }}:${{ inputs.tag }}"
+        id: image
+      - run: skopeo copy docker://${{ inputs.image }} docker://${{ steps.image.outputs.id }}
