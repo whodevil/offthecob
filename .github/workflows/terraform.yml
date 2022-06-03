@@ -35,8 +35,7 @@ jobs:
         with:
           name: ${{ inputs.uiArtifactName }}
           path: terraform/
-      - run: tar -xzvf ${{ inputs.uiArtifactName }}
-      - run: ls -l build
+      - run: tar -xzf ${{ inputs.uiArtifactName }}
       - run: |
           sudo apt-get update
           sudo apt-get -y install skopeo
