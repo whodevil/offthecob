@@ -21,10 +21,12 @@ on:
         type: string
 jobs:
   terraform:
+    environment: ${{ inputs.environment }}
     env:
       AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
       AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
       AWS_REGION: 'us-west-2'
+      TF_VAR_DOMAIN_NAME: ${{ secrets.TF_VAR_DOMAIN_NAME }}
     runs-on: ubuntu-latest
     defaults:
       run:
@@ -35,8 +37,7 @@ jobs:
         with:
           name: ${{ inputs.uiArtifactName }}
           path: terraform/
-      - run: tar -xzvf ${{ inputs.uiArtifactName }}
-      - run: ls -l build
+      - run: tar -xzf ${{ inputs.uiArtifactName }}
       - run: |
           sudo apt-get update
           sudo apt-get -y install skopeo
