@@ -6,7 +6,8 @@ on:
       AWS_SECRET_ACCESS_KEY:
         required: true
     outputs:
-      repo: ${{ jobs.build.outputs.repo }}
+      repo:
+        value: ${{ jobs.build.outputs.repo }}
 jobs:
   build:
     runs-on: ubuntu-latest
