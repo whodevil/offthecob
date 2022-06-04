@@ -1,3 +1,4 @@
+name: "JVM"
 on:
   workflow_call:
     secrets:
