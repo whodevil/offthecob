@@ -35,11 +35,8 @@ jobs:
           aws-region: us-west-2
       - run: |
           sudo apt-get update
-          sudo apt-get upgrade -y
-          sudo apt-get -y install skopeo
-          curl "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip" -o "awscliv2.zip"
-          unzip awscliv2.zip
-          sudo ./aws/install
+          sudo apt-get -y install skopeo python3 python3-pip
+          sudo pip install awscli
       - run: aws ecr create-repository --repository-name ${{ github.repository }}-${{ inputs.environment }} || true
       - name: Log in to GitHub Registry
         uses: docker/login-action@f054a8b539a109f9f41c372932f1ae047eff08c9
