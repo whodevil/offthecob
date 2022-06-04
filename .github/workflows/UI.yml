@@ -1,3 +1,4 @@
+name: "UI"
 on:
   workflow_call:
     outputs:
@@ -17,11 +18,11 @@ jobs:
       packages: write
     steps:
       - uses: actions/checkout@v1
-      - name: install pre-reqs
-        run: |
-          sudo apt-get update
-          sudo apt-get install python3 python3-pip npm yarn -y
-          sudo pip install awscli
+      - uses: actions/setup-node@v3
+        with:
+          node-version: 14
+          cache: 'yarn'
+          cache-dependency-path: 'ui/yarn.lock'
       - run: yarn install
       - run: yarn build
       - id: vars

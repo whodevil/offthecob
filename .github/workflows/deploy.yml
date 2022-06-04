@@ -3,6 +3,7 @@ on:
   push:
     branches:
       - master
+  pull_request:
 jobs:
   ui:
     uses: "./.github/workflows/UI.yml"
@@ -15,7 +16,7 @@ jobs:
     uses: ./.github/workflows/terraform.yml
     needs: [ui, jvm]
     with:
-      apply: true
+      apply: ${{ github.event_name != 'pull_request' }}
       environment: staging
       uiArtifactName: ${{ needs.ui.outputs.archive }}
       tag: ${{ needs.jvm.outputs.tag }}
