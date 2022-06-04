@@ -9,24 +9,14 @@ jobs:
     secrets:
       DOCKER_USERNAME: ${{ secrets.DOCKER_USERNAME }}
       DOCKER_PASSWORD: ${{ secrets.DOCKER_PASSWORD }}
-  imageSyncStaging:
-    needs: [jvm]
-    uses: ./.github/workflows/image-sync.yml
-    with:
-      environment: staging
-      tag: ${{ needs.jvm.outputs.tag }}
-    secrets:
-      AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
-      AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
   staging:
-    needs: [ui, jvm, imageSyncStaging]
+    needs: [ui, jvm]
     uses: ./.github/workflows/terraform.yml
     with:
       apply: false
       environment: staging
       uiArtifactName: ${{ needs.ui.outputs.archive }}
       tag: ${{ needs.jvm.outputs.tag }}
-      registry: ${{ needs.imageSyncStaging.outputs.registry }}
     secrets:
       AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
       AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
