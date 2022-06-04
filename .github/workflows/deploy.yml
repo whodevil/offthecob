@@ -8,19 +8,17 @@ jobs:
     uses: "./.github/workflows/UI.yml"
   jvm:
     uses: "./.github/workflows/JVM.yml"
-    with:
-      registry: ghcr.io
     secrets:
       DOCKER_USERNAME: ${{ secrets.DOCKER_USERNAME }}
       DOCKER_PASSWORD: ${{ secrets.DOCKER_PASSWORD }}
-  terraform:
+  staging:
     uses: ./.github/workflows/terraform.yml
     needs: [ui, jvm]
     with:
       apply: true
       environment: staging
       uiArtifactName: ${{ needs.ui.outputs.archive }}
-      image: ${{ needs.ui.outputs.image }}
+      tag: ${{ needs.jvm.outputs.tag }}
     secrets:
       AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
       AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}

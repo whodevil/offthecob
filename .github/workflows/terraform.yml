@@ -16,31 +16,53 @@ on:
       uiArtifactName:
         required: true
         type: string
-      image:
+      tag:
         required: true
         type: string
 jobs:
   terraform:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      packages: read
     environment: ${{ inputs.environment }}
     env:
       AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
       AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
       AWS_REGION: 'us-west-2'
       TF_VAR_DOMAIN_NAME: ${{ secrets.TF_VAR_DOMAIN_NAME }}
-    runs-on: ubuntu-latest
     defaults:
       run:
         working-directory: terraform
     steps:
       - uses: actions/checkout@master
+      - uses: aws-actions/configure-aws-credentials@v1
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: us-west-2
+      - run: |
+          sudo apt-get update
+          sudo apt-get -y install skopeo python3 python3-pip
+          sudo pip install awscli
+      - run: aws ecr create-repository --repository-name ${{ github.repository }}-${{ inputs.environment }} || true
+      - name: Log in to GitHub Registry
+        uses: docker/login-action@f054a8b539a109f9f41c372932f1ae047eff08c9
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+      - name: Login to Amazon ECR
+        id: login-ecr
+        uses: aws-actions/amazon-ecr-login@v1
+      - run: echo "::set-output name=id::${{ steps.login-ecr.outputs.registry }}/${{ github.repository }}-${{ inputs.environment }}:${{ inputs.tag }}"
+        id: image
+      - run: skopeo copy docker://ghcr.io/${{ github.repository }}:${{ inputs.tag }} docker://${{ steps.image.outputs.id }}
       - uses: actions/download-artifact@v3
         with:
           name: ${{ inputs.uiArtifactName }}
           path: terraform/
       - run: tar -xzf ${{ inputs.uiArtifactName }}
-      - run: |
-          sudo apt-get update
-          sudo apt-get -y install skopeo
       - uses: hashicorp/setup-terraform@v2
         with:
           terraform_version: 1.2.0
@@ -48,6 +70,8 @@ jobs:
       - run: terraform init
       - run: terraform validate
       - run: terraform workspace select ${{ inputs.environment }}
-      - run: terraform plan
-      - run: terraform apply -auto-approve
+      - run: terraform plan -out=.tfPlan
+        env:
+          TF_VAR_API_IMAGE: ${{ steps.image.outputs.id }}
+      - run: terraform apply -auto-approve .tfPlan
         if: inputs.apply == true
