@@ -50,4 +50,4 @@ jobs:
       - run: echo "::set-output name=id::${{ steps.login-ecr.outputs.registry }}/${{ github.repository }}-${{ inputs.environment }}:${{ inputs.tag }}"
         id: image
       - run: echo "image ${{ inputs.image }}"
-      - run: skopeo copy docker://${{ inputs.image }} docker://${{ steps.image.outputs.id }}
+      - run: skopeo copy docker://ghcr.io/${{ github.repository }}:${{ inputs.tag }} docker://${{ steps.image.outputs.id }}

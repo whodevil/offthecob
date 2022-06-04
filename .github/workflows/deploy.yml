@@ -8,21 +8,15 @@ jobs:
     uses: "./.github/workflows/UI.yml"
   jvm:
     uses: "./.github/workflows/JVM.yml"
-    needs: [createEcr]
-    with:
-      repo: ${{ needs.createEcr.outputs.repo }}
     secrets:
       DOCKER_USERNAME: ${{ secrets.DOCKER_USERNAME }}
       DOCKER_PASSWORD: ${{ secrets.DOCKER_PASSWORD }}
-      AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
-      AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
   imageSyncStaging:
-    needs: [ jvm ]
+    needs: [jvm]
     uses: ./.github/workflows/image-sync.yml
     with:
       environment: staging
       tag: ${{ needs.jvm.outputs.tag }}
-      image: ${{ needs.jvm.outputs.image }}
     secrets:
       AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
       AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
