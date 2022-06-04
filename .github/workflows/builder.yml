@@ -1,4 +1,4 @@
-name: 'Deploy'
+name: 'Pipeline Runtime Builder'
 on:
   workflow_dispatch:
 
