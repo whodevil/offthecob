@@ -13,8 +13,8 @@ on:
       AWS_SECRET_ACCESS_KEY:
         required: true
     outputs:
-      repo:
-        value: ${{ jobs.sync.outputs.repo }}
+      registry:
+        value: ${{ jobs.sync.outputs.registry }}
 jobs:
   sync:
     environment: ${{ inputs.environment }}
@@ -23,7 +23,7 @@ jobs:
       contents: read
       packages: read
     outputs:
-      repo: ${{ steps.image.outputs.id }}
+      registry: ${{ steps.login-ecr.outputs.registry }}
     steps:
       - uses: aws-actions/configure-aws-credentials@v1
         with:

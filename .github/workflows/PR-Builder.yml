@@ -19,13 +19,14 @@ jobs:
       AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
       AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
   staging:
-    needs: [ui, imageSyncStaging]
+    needs: [ui, jvm, imageSyncStaging]
     uses: ./.github/workflows/terraform.yml
     with:
       apply: false
       environment: staging
       uiArtifactName: ${{ needs.ui.outputs.archive }}
-      image: ${{ needs.imageSyncStaging.outputs.repo }}
+      tag: ${{ needs.jvm.outputs.tag }}
+      registry: ${{ needs.imageSyncStaging.outputs.registry }}
     secrets:
       AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
       AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
