@@ -16,7 +16,7 @@ jobs:
     uses: ./.github/workflows/terraform.yml
     needs: [ui, jvm]
     with:
-      apply: github.event_name != 'pull_request'
+      apply: ${{ github.event_name != 'pull_request' }}
       environment: staging
       uiArtifactName: ${{ needs.ui.outputs.archive }}
       tag: ${{ needs.jvm.outputs.tag }}
