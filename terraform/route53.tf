@@ -1,6 +1,11 @@
+locals {
+  domain_name_prefix = terraform.workspace == "production" ? "www" : terraform.workspace
+  domain_name = "${local.domain_name_prefix}.offthecob.info"
+}
+
 resource "aws_route53_record" "www" {
   zone_id = var.ZONE_ID
-  name    = var.DOMAIN_NAME
+  name    = local.domain_name
   type    = "A"
   alias {
     name = aws_s3_bucket.website.website_domain
