@@ -1,9 +1,5 @@
-data "aws_route53_zone" "site" {
-  name = var.ROOT_ZONE_NAME
-}
-
 resource "aws_route53_record" "www" {
-  zone_id = data.aws_route53_zone.site.zone_id
+  zone_id = var.ZONE_ID
   name    = var.DOMAIN_NAME
   type    = "A"
   alias {
