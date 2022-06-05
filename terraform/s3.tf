@@ -2,15 +2,35 @@ resource "aws_s3_bucket" "website" {
   bucket = "theagainagain-${terraform.workspace}"
 }
 
-#resource "aws_s3_bucket_cors_configuration" "website" {
-#  bucket = aws_s3_bucket.website.id
-#  cors_rule {
-#    allowed_headers = ["Authorization", "Content-Length"]
-#    allowed_methods = ["GET"]
-#    allowed_origins = ["https://${var.DOMAIN_NAME}"]
-#    max_age_seconds = 3000
-#  }
-#}
+data "aws_iam_policy_document" "website" {
+  statement {
+    actions = [
+      "s3:GetObject"
+    ]
+    principals {
+      identifiers = ["*"]
+      type = "AWS"
+    }
+    resources = [
+      "arn:aws:s3:::theagainagain-${terraform.workspace}/*"
+    ]
+  }
+}
+
+resource "aws_s3_bucket_policy" "website" {
+  bucket = aws_s3_bucket.website.id
+  policy = data.aws_iam_policy_document.website.json
+}
+
+resource "aws_s3_bucket_cors_configuration" "website" {
+  bucket = aws_s3_bucket.website.id
+  cors_rule {
+    allowed_headers = ["Authorization", "Content-Length"]
+    allowed_methods = ["GET"]
+    allowed_origins = ["https://${var.DOMAIN_NAME}"]
+    max_age_seconds = 3000
+  }
+}
 
 resource "aws_s3_bucket_website_configuration" "website" {
   bucket = aws_s3_bucket.website.id
