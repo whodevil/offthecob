@@ -8,8 +8,6 @@ on:
         required: true
       ZONE_ID:
         required: true
-      TERRAFORM_STATE_BUCKET:
-        required: true
     inputs:
       environment:
         required: true
@@ -36,7 +34,6 @@ jobs:
       AWS_REGION: 'us-west-2'
       TF_VAR_ZONE_ID: ${{ secrets.ZONE_ID }}
       TF_VAR_DOMAIN_NAME: ${{ secrets.TF_VAR_DOMAIN_NAME }}
-      TF_VAR_TERRAFORM_STATE_BUCKET: ${{ secrets.TERRAFORM_STATE_BUCKET }}
     defaults:
       run:
         working-directory: terraform
