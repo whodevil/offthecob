@@ -1,10 +1,10 @@
 locals {
   domain_name_prefix = terraform.workspace == "production" ? "www" : terraform.workspace
-  domain_name = "${local.domain_name_prefix}.${var.ZONE_ID}"
+  domain_name = "${local.domain_name_prefix}.offthecob.info"
 }
 
 resource "aws_route53_record" "www" {
-  zone_id = "${var.ZONE_ID}."
+  zone_id = var.ZONE_ID
   name    = local.domain_name
   type    = "A"
   alias {
