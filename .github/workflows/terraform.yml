@@ -42,7 +42,7 @@ jobs:
           aws-region: us-west-2
       - uses: actions/setup-python@v3
         with:
-          python-version: '3.x' # Version range or exact version of a Python version to use, using SemVer's version range syntax
+          python-version: '3.x'
       - run: pip install awscli
       - run: aws ecr create-repository --repository-name ${{ github.repository }}-${{ inputs.environment }} || true
       - name: Log in to GitHub Registry
