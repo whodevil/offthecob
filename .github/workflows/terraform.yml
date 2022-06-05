@@ -30,7 +30,6 @@ jobs:
       AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
       AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
       AWS_REGION: 'us-west-2'
-      TF_VAR_API_IMAGE: ${{ steps.image.outputs.id }}
       TF_VAR_ZONE_ID: ${{ secrets.ZONE_ID }}
       TF_VAR_DOMAIN_NAME: ${{ secrets.TF_VAR_DOMAIN_NAME }}
     defaults:
@@ -73,5 +72,7 @@ jobs:
       - run: terraform validate
       - run: terraform workspace select ${{ inputs.environment }}
       - run: terraform plan -out=.tfPlan
+        env:
+          TF_VAR_API_IMAGE: ${{ steps.image.outputs.id }}
       - run: terraform apply -auto-approve .tfPlan
         if: inputs.apply == true
