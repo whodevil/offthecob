@@ -1,5 +1,5 @@
 data "aws_route53_zone" "site" {
-  name         = var.ROOT_ZONE_NAME
+  name = var.ROOT_ZONE_NAME
 }
 
 resource "aws_route53_record" "www" {
