@@ -10,5 +10,5 @@ resource "aws_acm_certificate" "ssl_certificate" {
 
 resource "aws_acm_certificate_validation" "cert_validation" {
   certificate_arn = aws_acm_certificate.ssl_certificate.arn
-  validation_record_fqdns = [local.domain_name]
+  validation_record_fqdns = [local.domain_name, "*.${local.domain_name}"]
 }
