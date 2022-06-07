@@ -1,7 +1,0 @@
-type ServiceDefinition {
-    version: String!
-}
-
-type Query {
-    serviceDefinition: ServiceDefinition
-}

@@ -1,3 +1,0 @@
-package theagainagain
-
-annotation class OpenForTesting
