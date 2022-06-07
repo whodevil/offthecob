@@ -49,4 +49,4 @@ jobs:
         env:
           GITHUB_USERNAME: ${{ github.actor }}
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        run: ./gradlew --no-daemon jib -PtoImage=ghcr.io/${{ github.repository }} -Ptag=${{ steps.vars.outputs.tag }}
+        run: ./gradlew --no-daemon api-lambda:jib -PtoImage=ghcr.io/${{ github.repository }} -Ptag=${{ steps.vars.outputs.tag }}
