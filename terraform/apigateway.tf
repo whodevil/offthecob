@@ -16,7 +16,7 @@ resource "aws_lambda_permission" "api_gw" {
 resource "aws_apigatewayv2_stage" "lambda" {
   api_id = aws_apigatewayv2_api.api.id
 
-  name        = "serverless_lambda_stage"
+  name        = "graphql"
   auto_deploy = true
 }
 
@@ -33,4 +33,9 @@ resource "aws_apigatewayv2_route" "hello_world" {
 
   route_key = "POST /graphql"
   target    = "integrations/${aws_apigatewayv2_integration.api.id}"
+}
+
+resource "aws_api_gateway_domain_name" "api" {
+  certificate_arn = aws_acm_certificate_validation.api_cert_validation.certificate_arn
+  domain_name     = local.api_name
 }
