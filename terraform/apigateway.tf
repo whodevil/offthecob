@@ -31,10 +31,6 @@ module "api_gateway" {
     }
   }
 
-  body = templatefile("api.yaml", {
-    example_function_arn = module.api.lambda_function_arn
-  })
-
   tags = {
     environment = terraform.workspace
   }
