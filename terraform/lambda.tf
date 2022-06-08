@@ -4,4 +4,11 @@ module "api" {
   create_package = false
   image_uri      = var.API_IMAGE
   package_type   = "Image"
+
+  allowed_triggers = {
+    AllowExecutionFromAPIGateway = {
+      service    = "apigateway"
+      source_arn = "${module.api_gateway.apigatewayv2_api_execution_arn}/*/*"
+    }
+  }
 }

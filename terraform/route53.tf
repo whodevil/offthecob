@@ -38,3 +38,15 @@ resource "aws_route53_record" "api" {
     evaluate_target_health = false
   }
 }
+
+resource "aws_route53_record" "api" {
+  zone_id = var.ZONE_ID
+  name    = local.api_name
+  type    = "A"
+
+  alias {
+    name                   = module.api_gateway.apigatewayv2_domain_name_configuration[0].target_domain_name
+    zone_id                = module.api_gateway.apigatewayv2_domain_name_configuration[0].hosted_zone_id
+    evaluate_target_health = false
+  }
+}
