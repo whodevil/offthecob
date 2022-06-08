@@ -15,19 +15,16 @@ resource "aws_acm_certificate_validation" "cert_validation" {
   validation_record_fqdns =  [for record in aws_route53_record.validation : record.fqdn]
 }
 
-resource "aws_acm_certificate" "api_ssl_certificate" {
-  provider = aws.acm_provider
+module "acm" {
+  source  = "terraform-aws-modules/acm/aws"
+  version = "~> 3.0"
+
+  wait_for_validation = true
+
   domain_name               = local.api_name
+  zone_id                   = var.ZONE_ID
   subject_alternative_names = ["*.${local.api_name}", local.api_name]
-  validation_method         = "DNS"
-
-  lifecycle {
-    create_before_destroy = true
+  tags = {
+    environment = terraform.workspace
   }
-}
-
-resource "aws_acm_certificate_validation" "api_cert_validation" {
-  provider = aws.acm_provider
-  certificate_arn         = aws_acm_certificate.api_ssl_certificate.arn
-  validation_record_fqdns =  [for record in aws_route53_record.api_validation : record.fqdn]
 }
