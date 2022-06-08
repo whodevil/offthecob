@@ -1,41 +1,41 @@
-resource "aws_apigatewayv2_api" "api" {
-  name          = "api-offthecob-${terraform.workspace}"
+module "api_gateway" {
+  source = "terraform-aws-modules/apigateway-v2/aws"
+
+  name          = "api-otc-${terraform.workspace}"
+  description   = "otc api ${terraform.workspace}"
   protocol_type = "HTTP"
-  target        = module.api.lambda_function_arn
-}
 
-resource "aws_lambda_permission" "api_gw" {
-  statement_id  = "AllowExecutionFromAPIGateway"
-  action        = "lambda:InvokeFunction"
-  function_name = module.api.lambda_function_name
-  principal     = "apigateway.amazonaws.com"
+  cors_configuration = {
+    allow_headers = ["content-type", "x-amz-date", "authorization", "x-api-key", "x-amz-security-token", "x-amz-user-agent"]
+    allow_methods = ["*"]
+    allow_origins = ["*"]
+  }
 
-  source_arn = "${aws_apigatewayv2_api.api.execution_arn}/*/*"
-}
+  domain_name                 = local.api_name
+  domain_name_certificate_arn = module.acm.acm_certificate_arn
 
-resource "aws_apigatewayv2_stage" "lambda" {
-  api_id = aws_apigatewayv2_api.api.id
+  default_stage_access_log_destination_arn = aws_cloudwatch_log_group.logs.arn
+  default_stage_access_log_format          = "{ \"sourceIp\":\"$context.identity.sourceIp\", \"requestTime\":\"$context.requestTime\", \"method\":\"$context.httpMethod\", \"routeKey\":\"$context.routeKey\", \"protocol\":\"$context.protocol\", \"status\":\"$context.status\", \"responseLength\":\"$context.responseLength\", \"requestId\":\"$context.requestId\", \"integrationErrorMessage\":\"$context.integrationErrorMessage\"}"
 
-  name        = "graphql"
-  auto_deploy = true
-}
+  default_route_settings = {
+    detailed_metrics_enabled = true
+    throttling_burst_limit   = 100
+    throttling_rate_limit    = 100
+  }
 
-resource "aws_apigatewayv2_integration" "api" {
-  api_id = aws_apigatewayv2_api.api.id
+  integrations = {
+    "POST /graphql" = {
+      lambda_arn             = module.api.lambda_function_arn
+      payload_format_version = "2.0"
+      timeout_milliseconds   = 12000
+    }
+  }
 
-  integration_uri    = module.api.lambda_function_invoke_arn
-  integration_type   = "AWS_PROXY"
-  integration_method = "POST"
-}
+  body = templatefile("api.yaml", {
+    example_function_arn = module.api.lambda_function_arn
+  })
 
-resource "aws_apigatewayv2_route" "hello_world" {
-  api_id = aws_apigatewayv2_api.api.id
-
-  route_key = "POST /graphql"
-  target    = "integrations/${aws_apigatewayv2_integration.api.id}"
-}
-
-resource "aws_api_gateway_domain_name" "api" {
-  certificate_arn = aws_acm_certificate_validation.api_cert_validation.certificate_arn
-  domain_name     = local.api_name
+  tags = {
+    environment = terraform.workspace
+  }
 }
