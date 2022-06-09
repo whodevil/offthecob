@@ -1,7 +1,6 @@
 package info.offthecob.lambda
 
-import com.amazonaws.services.lambda.runtime.events.APIGatewayV2HTTPEvent
-import com.beust.klaxon.Klaxon
+import com.google.gson.Gson
 import graphql.ExecutionInput
 import graphql.GraphQL
 import info.offthecob.common.OpenForTesting
@@ -11,7 +10,7 @@ import javax.inject.Inject
 private val logger = KotlinLogging.logger {}
 
 @OpenForTesting
-class GraphqlService @Inject constructor(private val graphql: GraphQL, private val klaxon: Klaxon) {
+class GraphqlService @Inject constructor(private val graphql: GraphQL, private val gson: Gson) {
     fun request(input: String, context: Any): String {
         logger.info { "Body: $input" }
         return executeRequest(buildExecutionInput(input).context(context).build())
@@ -21,15 +20,15 @@ class GraphqlService @Inject constructor(private val graphql: GraphQL, private v
         val result = graphql.execute(executionInput)
         logger.info { "finished query execution" }
         return when {
-            result.isDataPresent -> klaxon.toJsonString(result.toSpecification())
+            result.isDataPresent -> gson.toJson(result.toSpecification())
             result.errors.isNotEmpty() -> "{\"error\": \"${result.errors.joinToString { it.message }}\"}"
             else -> "{}"
         }
     }
 
     private fun buildExecutionInput(body: String): ExecutionInput.Builder {
-        val request = klaxon.parse<GraphqlRequest>(body) ?: throw RuntimeException("unable to parse input body")
-        logger.info { "parsed request: $request"}
+        val request = gson.fromJson(body, GraphqlRequest::class.java)
+        logger.info { "parsed request: $request" }
         val builder = ExecutionInput.newExecutionInput(request.query)
         if (request.variables?.isNotEmpty() == true) {
             logger.info { "handling variables" }
