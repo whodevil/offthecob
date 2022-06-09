@@ -44,4 +44,18 @@ class GraphqlServiceTest extends Specification {
         response.contains("thing1")
         response.contains("thing2")
     }
+
+    def "default service version"() {
+        given:
+        def graphql = Guice.createInjector(new ServiceModule()).getInstance(GraphqlService.class)
+        def query = new GraphqlRequest("{ serviceDefinition { version } }", [:], "")
+        def json = JsonOutput.toJson(query)
+        def request = TestUtils.buildRequest("POST", json)
+
+        when:
+        def response = graphql.request(json, request)
+
+        then:
+        response.contains(ServiceModule.DEFAULT_SERVICE_VERSION)
+    }
 }

@@ -2,8 +2,13 @@ type Thing {
     name: String
 }
 
+type ServiceDefinition {
+    version: String!
+}
+
 type Query {
     things: [Thing]
+    serviceDefinition: ServiceDefinition
 }
 
 schema {

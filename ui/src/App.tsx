@@ -8,7 +8,7 @@ import Home from './Home'
 import ApolloClient from 'apollo-boost'
 
 const client = new ApolloClient({
-  uri: '/graphql',
+  uri: 'https://api-staging.offthecob.info/graphql',
   request: operation => {
     operation.setContext({
       headers: {

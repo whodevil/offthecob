@@ -39,7 +39,7 @@ const Home: React.FC = () => {
   return (
     <div className="App">
       <header className="App-header">
-        <span>bro</span>
+        <span>Hello</span>
       </header>
       <footer>
         <span> <Version /> <Link to="/graphiql">Graphiql</Link></span>
