@@ -21,7 +21,7 @@ dependencyResolutionManagement {
 
     versionCatalogs {
         create("libs") {
-            from("info.offthecob.jvm.platform:catalog:v0.0.13")
+            from("info.offthecob.jvm.platform:catalog:v0.0.14")
             library("structured-logging", "info.offthecob.jvm.platform", "logging").version {
                 strictly("v0.0.13")
             }

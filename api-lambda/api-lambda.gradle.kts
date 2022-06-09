@@ -43,7 +43,7 @@ dependencies {
     implementation(libs.graphql)
     implementation(libs.klaxon)
     implementation(libs.gson)
-    implementation(libs.lambda)
+    implementation(libs.bundles.lambda)
     implementation(libs.structured.logging)
 
     testImplementation(libs.bundles.spock)
