@@ -13,6 +13,17 @@ import javax.inject.Singleton
 
 class ServiceModule : KotlinModule() {
 
+    companion object {
+        const val DEFAULT_SERVICE_VERSION = "r9999"
+    }
+
+    @Provides
+    @Singleton
+    @Named("serviceVersion")
+    fun serviceVersion(): String {
+        return System.getenv("SERVICE_VERSION") ?: DEFAULT_SERVICE_VERSION
+    }
+
     @Provides
     @Singleton
     @Named("schema")
@@ -47,6 +58,7 @@ class ServiceModule : KotlinModule() {
     fun runtimeWiring(dataFetcherIndex: DataFetcherIndex): RuntimeWiring {
         return RuntimeWiring.newRuntimeWiring().type("Query") { builder ->
             builder.dataFetcher("things", dataFetcherIndex.thing())
+            builder.dataFetcher("serviceDefinition", dataFetcherIndex.serviceDefinition())
         }.build()
     }
 }

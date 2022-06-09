@@ -13,4 +13,8 @@ module "api" {
       source_arn = "${module.api_gateway.apigatewayv2_api_execution_arn}/*/*"
     }
   }
+
+  environment_variables = {
+    SERVICE_VERSION = var.TAG
+  }
 }
