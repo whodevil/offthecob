@@ -5,6 +5,7 @@ import com.amazonaws.services.lambda.runtime.events.APIGatewayV2HTTPResponse
 import com.google.common.net.HttpHeaders.CONTENT_TYPE
 import com.google.common.net.MediaType
 import mu.KotlinLogging
+import java.util.*
 import javax.inject.Inject
 
 private val logger = KotlinLogging.logger {}
@@ -20,7 +21,8 @@ class RequestRouter @Inject constructor(private val service: GraphqlService) {
             when (input!!.requestContext!!.http!!.method) {
                 "POST" -> {
                     logger.info { "handling POST" }
-                    response.body = service.request(input)
+                    val decodedBody = String(Base64.getDecoder().decode(input.body))
+                    response.body = service.request(decodedBody, input)
                     response.headers = response.headers ?: mutableMapOf()
                     response.headers[CONTENT_TYPE] = MediaType.JSON_UTF_8.toString()
                     response.statusCode = 200

@@ -12,9 +12,9 @@ private val logger = KotlinLogging.logger {}
 
 @OpenForTesting
 class GraphqlService @Inject constructor(private val graphql: GraphQL, private val klaxon: Klaxon) {
-    fun request(input: APIGatewayV2HTTPEvent): String {
-        logger.info { "Body: ${input.body}" }
-        return executeRequest(buildExecutionInput(input.body).context(input).build())
+    fun request(input: String, context: Any): String {
+        logger.info { "Body: ${input}" }
+        return executeRequest(buildExecutionInput(input).context(context).build())
     }
 
     private fun executeRequest(executionInput: ExecutionInput): String {

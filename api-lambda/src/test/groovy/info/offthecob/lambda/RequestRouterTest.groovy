@@ -1,5 +1,6 @@
 package info.offthecob.lambda
 
+import com.google.common.base.Charsets
 import com.google.common.net.MediaType
 import spock.lang.Specification
 
@@ -44,8 +45,9 @@ class RequestRouterTest extends Specification {
     def "happy path produces expected values" () {
         given:
         String mockBody = "MOCK_VALUE"
-        def request = TestUtils.buildRequest("POST", mockBody)
-        service.request(request) >> mockBody
+        def encodedString = Base64.getEncoder().encodeToString(mockBody.getBytes(Charsets.UTF_8))
+        def request = TestUtils.buildRequest("POST", encodedString)
+        service.request(mockBody,  request) >> mockBody
 
         when:
         def response = router.response(request)
