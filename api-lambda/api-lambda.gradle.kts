@@ -29,11 +29,12 @@ jib {
         entrypoint = listOf(
             "/usr/bin/java",
             "-Dlogback.configurationFile=/app/resources/logback.xml",
+            "-DgraphqlSchema=/app/resources/schema.graphql",
             "-cp",
             "@/app/jib-classpath-file",
             "com.amazonaws.services.lambda.runtime.api.client.AWSLambda"
         )
-        args = listOf("info.offthecob.lambda.Graphql::handleRequest")
+        args = listOf("info.offthecob.lambda.LambdaHandler::handleRequest")
     }
 }
 
@@ -44,7 +45,8 @@ dependencies {
     implementation(libs.klaxon)
     implementation(libs.gson)
     implementation(libs.bundles.lambda)
-    implementation(libs.structured.logging)
+    implementation(libs.bundles.jvm.platform)
+    implementation(libs.bundles.guice)
 
     testImplementation(libs.bundles.spock)
     testImplementation(libs.bundles.groovy)
@@ -54,4 +56,12 @@ java {
     toolchain {
         languageVersion.set(JavaLanguageVersion.of(11))
     }
+}
+
+tasks.named<Test>("test") {
+    useJUnitPlatform()
+}
+
+allOpen {
+    annotation("info.offthecob.common.OpenForTesting")
 }

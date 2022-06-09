@@ -21,10 +21,12 @@ dependencyResolutionManagement {
 
     versionCatalogs {
         create("libs") {
-            from("info.offthecob.jvm.platform:catalog:v0.0.14")
-            library("structured-logging", "info.offthecob.jvm.platform", "logging").version {
-                strictly("v0.0.13")
-            }
+            val version = "v0.0.15"
+            version("jvm-platform", version)
+            from("info.offthecob.jvm.platform:catalog:${version}")
+            library("logging", "info.offthecob.jvm.platform", "logging").versionRef("jvm-platform")
+            library("common", "info.offthecob.jvm.platform", "common").versionRef("jvm-platform")
+            bundle("jvm-platform", listOf("logging", "common"))
         }
     }
 }

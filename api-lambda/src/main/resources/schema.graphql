@@ -1,0 +1,11 @@
+type Thing {
+    name: String
+}
+
+type Query {
+    things: [Thing]
+}
+
+schema {
+    query: Query
+}
