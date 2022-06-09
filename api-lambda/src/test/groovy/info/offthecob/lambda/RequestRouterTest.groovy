@@ -1,6 +1,7 @@
 package info.offthecob.lambda
 
 import com.google.common.base.Charsets
+import com.google.common.net.HttpHeaders
 import com.google.common.net.MediaType
 import spock.lang.Specification
 
@@ -12,7 +13,7 @@ class RequestRouterTest extends Specification {
 
     def setup() {
         service = Mock(GraphqlService)
-        router = new RequestRouter(service)
+        router = new RequestRouter(service, "*")
     }
 
     def "null data returns 400"() {
@@ -56,5 +57,19 @@ class RequestRouterTest extends Specification {
         response.statusCode == 200
         response.body == mockBody
         response.headers[CONTENT_TYPE] == MediaType.JSON_UTF_8.toString()
+    }
+
+    def "handle options"() {
+        given:
+        def request = TestUtils.buildRequest("OPTIONS", "")
+
+        when:
+        def response = router.response(request)
+
+        then:
+        response.headers[HttpHeaders.ACCESS_CONTROL_ALLOW_ORIGIN] == "*"
+        response.headers[HttpHeaders.ACCESS_CONTROL_ALLOW_METHODS] == RequestRouter.ALLOW_METHODS
+        response.headers[HttpHeaders.ACCESS_CONTROL_ALLOW_HEADERS] == RequestRouter.ALLOW_HEADERS
+        response.statusCode == 204
     }
 }

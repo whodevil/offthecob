@@ -6,6 +6,7 @@ import './App.css'
 import Home from './Home'
 
 import ApolloClient from 'apollo-boost'
+import GraphqlWrapper from "./GraphqlWrapper";
 
 const client = new ApolloClient({
   uri: 'https://api-staging.offthecob.info/graphql',
@@ -25,6 +26,7 @@ const App: React.FC = () => {
 
         <div>
           <Route path="/" exact component={Home}/>
+          <Route path="/graphiql" exact component={GraphqlWrapper} />
         </div>
 
       </Router>
