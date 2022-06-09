@@ -15,6 +15,14 @@ class ServiceModule : KotlinModule() {
 
     companion object {
         const val DEFAULT_SERVICE_VERSION = "r9999"
+        const val ALLOWED_ORIGIN = "ALLOWED_ORIGIN"
+    }
+
+    @Provides
+    @Singleton
+    @Named(ALLOWED_ORIGIN)
+    fun allowedOrigin(): String {
+        return System.getenv(ALLOWED_ORIGIN) ?: "*"
     }
 
     @Provides

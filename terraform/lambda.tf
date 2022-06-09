@@ -16,5 +16,6 @@ module "api" {
 
   environment_variables = {
     SERVICE_VERSION = var.TAG
+    CORS_ORIGIN = "https://${local.domain_name}"
   }
 }
