@@ -13,7 +13,7 @@ private val logger = KotlinLogging.logger {}
 @OpenForTesting
 class GraphqlService @Inject constructor(private val graphql: GraphQL, private val klaxon: Klaxon) {
     fun request(input: String, context: Any): String {
-        logger.info { "Body: ${input}" }
+        logger.info { "Body: $input" }
         return executeRequest(buildExecutionInput(input).context(context).build())
     }
 
@@ -31,14 +31,16 @@ class GraphqlService @Inject constructor(private val graphql: GraphQL, private v
         val request = klaxon.parse<GraphqlRequest>(body) ?: throw RuntimeException("unable to parse input body")
         logger.info { "parsed request: $request"}
         val builder = ExecutionInput.newExecutionInput(request.query)
-        if (request.variables.isNotEmpty()) {
+        if (request.variables?.isNotEmpty() == true) {
+            logger.info { "handling variables" }
             builder.variables(request.variables)
         }
-        if (request.operationName.isNotEmpty()) {
+        if (request.operationName?.isNotEmpty() == true) {
+            logger.info { "operation name" }
             builder.operationName(request.operationName)
         }
         return builder
     }
 }
 
-data class GraphqlRequest(val query: String, val variables: Map<String, Any> = mapOf(), val operationName: String = "")
+data class GraphqlRequest(val query: String, val variables: Map<String, Any>?, val operationName: String?)
