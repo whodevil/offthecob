@@ -5,7 +5,7 @@ module "api" {
   image_uri                               = var.API_IMAGE
   package_type                            = "Image"
   create_current_version_allowed_triggers = false
-  memory_size                             = 512
+  memory_size                             = 1024
 
   allowed_triggers = {
     AllowExecutionFromAPIGateway = {

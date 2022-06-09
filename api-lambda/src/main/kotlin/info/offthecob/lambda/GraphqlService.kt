@@ -5,16 +5,21 @@ import com.beust.klaxon.Klaxon
 import graphql.ExecutionInput
 import graphql.GraphQL
 import info.offthecob.common.OpenForTesting
+import mu.KotlinLogging
 import javax.inject.Inject
+
+private val logger = KotlinLogging.logger {}
 
 @OpenForTesting
 class GraphqlService @Inject constructor(private val graphql: GraphQL, private val klaxon: Klaxon) {
     fun request(input: APIGatewayV2HTTPEvent): String {
+        logger.info { "Body: ${input.body}" }
         return executeRequest(buildExecutionInput(input.body).context(input).build())
     }
 
     private fun executeRequest(executionInput: ExecutionInput): String {
         val result = graphql.execute(executionInput)
+        logger.info { "finished query execution" }
         return when {
             result.isDataPresent -> klaxon.toJsonString(result.toSpecification())
             result.errors.isNotEmpty() -> "{\"error\": \"${result.errors.joinToString { it.message }}\"}"
@@ -24,6 +29,7 @@ class GraphqlService @Inject constructor(private val graphql: GraphQL, private v
 
     private fun buildExecutionInput(body: String): ExecutionInput.Builder {
         val request = klaxon.parse<GraphqlRequest>(body) ?: throw RuntimeException("unable to parse input body")
+        logger.info { "parsed request: $request"}
         val builder = ExecutionInput.newExecutionInput(request.query)
         if (request.variables.isNotEmpty()) {
             builder.variables(request.variables)
