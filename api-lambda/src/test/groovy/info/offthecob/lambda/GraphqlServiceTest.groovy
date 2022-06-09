@@ -10,7 +10,7 @@ class GraphqlServiceTest extends Specification {
         def graphql = Guice.createInjector(new ServiceModule()).getInstance(GraphqlService.class)
 
         when:
-        graphql.request(null)
+        graphql.request(null, null)
 
         then:
         thrown RuntimeException
@@ -20,10 +20,11 @@ class GraphqlServiceTest extends Specification {
         given:
         def graphql = Guice.createInjector(new ServiceModule()).getInstance(GraphqlService.class)
         def query = new GraphqlRequest("{things}", [:], "")
-        def request = TestUtils.buildRequest("POST", JsonOutput.toJson(query))
+        def json = JsonOutput.toJson(query)
+        def request = TestUtils.buildRequest("POST", json)
 
         when:
-        def response = graphql.request(request)
+        def response = graphql.request(json, request)
 
         then:
         response.contains("SubSelectionRequired")
@@ -33,10 +34,11 @@ class GraphqlServiceTest extends Specification {
         given:
         def graphql = Guice.createInjector(new ServiceModule()).getInstance(GraphqlService.class)
         def query = new GraphqlRequest("{ things { name } }", [:], "")
-        def request = TestUtils.buildRequest("POST", JsonOutput.toJson(query))
+        def json = JsonOutput.toJson(query)
+        def request = TestUtils.buildRequest("POST", json)
 
         when:
-        def response = graphql.request(request)
+        def response = graphql.request(json, request)
 
         then:
         response.contains("thing1")
