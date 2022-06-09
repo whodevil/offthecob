@@ -35,6 +35,7 @@ class RequestRouter @Inject constructor(
                     response.statusCode = 200
                 }
                 "OPTIONS" -> {
+                    logger.info { "handling OPTIONS" }
                     response.headers = response.headers ?: mutableMapOf()
                     response.headers[ACCESS_CONTROL_ALLOW_ORIGIN] = allowedOrigin
                     response.headers[ACCESS_CONTROL_ALLOW_METHODS] = ALLOW_METHODS
