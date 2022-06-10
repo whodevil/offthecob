@@ -27,7 +27,8 @@ class RequestRouter @Inject constructor(
         try {
             when (input!!.requestContext!!.http!!.method) {
                 "POST" -> {
-                    logger.info { "handling POST" }
+                    logger.info { "handling POST, body: ${input.body}" }
+                    logger.info { "POST headers: ${input.headers}" }
                     val decodedBody = String(Base64.getDecoder().decode(input.body))
                     response.body = service.request(decodedBody, input)
                     response.headers = response.headers ?: mutableMapOf()
