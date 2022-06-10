@@ -8,7 +8,7 @@ module "api_gateway" {
   cors_configuration = {
     allow_headers = ["X-Requested-With", "content-type", "x-amz-date", "authorization", "x-api-key", "x-amz-security-token", "x-amz-user-agent"]
     allow_methods = ["OPTIONS", "POST"]
-    allow_origins = ["https://${local.domain_name}"]
+    allow_origins = ["*"]
   }
 
   domain_name                 = local.api_name

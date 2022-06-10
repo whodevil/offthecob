@@ -21,14 +21,14 @@ class RequestRouter @Inject constructor(
         const val ALLOW_HEADERS = "Content-Type, X-Requested-With"
     }
 
-    fun response(input: APIGatewayV2HTTPEvent?): APIGatewayV2HTTPResponse {
+    fun response(request: APIGatewayV2HTTPEvent?): APIGatewayV2HTTPResponse {
         val response = APIGatewayV2HTTPResponse()
         try {
-            when (input!!.requestContext!!.http!!.method) {
+            when (request!!.requestContext!!.http!!.method) {
                 "POST" -> {
-                    logger.info { "handling POST, body: ${input.body}" }
-                    logger.info { "POST headers: ${input.headers}" }
-                    response.body = service.request(input.body, input)
+                    logger.info { "handling POST, body: ${request.body}" }
+                    logger.info { "POST headers: ${request.headers}" }
+                    response.body = service.request(request.body, request)
                     response.headers = response.headers ?: mutableMapOf()
                     response.headers[CONTENT_TYPE] = MediaType.JSON_UTF_8.toString()
                     response.statusCode = 200
@@ -36,7 +36,8 @@ class RequestRouter @Inject constructor(
                 "OPTIONS" -> {
                     logger.info { "handling OPTIONS" }
                     response.headers = response.headers ?: mutableMapOf()
-                    response.headers[ACCESS_CONTROL_ALLOW_ORIGIN] = allowedOrigin
+                    logger.info { "Bypassing configured origin: ${allowedOrigin}" }
+                    response.headers[ACCESS_CONTROL_ALLOW_ORIGIN] = "*"
                     response.headers[ACCESS_CONTROL_ALLOW_METHODS] = ALLOW_METHODS
                     response.headers[ACCESS_CONTROL_ALLOW_HEADERS] = ALLOW_HEADERS
                     response.statusCode = 204
