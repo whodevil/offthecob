@@ -6,7 +6,6 @@ import com.google.common.net.HttpHeaders.*
 import com.google.common.net.MediaType
 import info.offthecob.lambda.ServiceModule.Companion.ALLOWED_ORIGIN
 import mu.KotlinLogging
-import java.util.*
 import javax.inject.Inject
 import javax.inject.Named
 
@@ -29,8 +28,7 @@ class RequestRouter @Inject constructor(
                 "POST" -> {
                     logger.info { "handling POST, body: ${input.body}" }
                     logger.info { "POST headers: ${input.headers}" }
-                    val decodedBody = String(Base64.getDecoder().decode(input.body))
-                    response.body = service.request(decodedBody, input)
+                    response.body = service.request(input.body, input)
                     response.headers = response.headers ?: mutableMapOf()
                     response.headers[CONTENT_TYPE] = MediaType.JSON_UTF_8.toString()
                     response.statusCode = 200
