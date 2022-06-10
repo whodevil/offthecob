@@ -8,7 +8,7 @@ const fetcher = createGraphiQLFetcher({
 
 const GraphqlWrapper: React.FC = () => {
     return (
-        <GraphiQL fetcher={fetcher} editorTheme={'dracula'} />
+        <GraphiQL fetcher={fetcher} />
     )
 }
 
