@@ -17,6 +17,7 @@
     "apollo-boost": "^0.4.9",
     "graphiql": "^1.6.0",
     "graphql": "^15.0.0",
+    "graphql-ws": "^5.9.0",
     "isomorphic-fetch": "^3.0.0",
     "minimist": "^1.2.6",
     "node-forge": "^1.3.0",
