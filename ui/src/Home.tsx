@@ -1,5 +1,4 @@
 import React from 'react'
-import { Link } from 'react-router-dom'
 import { gql } from 'apollo-boost'
 import { useQuery } from '@apollo/react-hooks'
 
@@ -42,7 +41,7 @@ const Home: React.FC = () => {
         <span>Hello</span>
       </header>
       <footer>
-        <span> <Version /> <Link to="/graphiql">Graphiql</Link></span>
+        <span> <Version /> <a href="/graphiql.html">Graphiql</a></span>
       </footer>
     </div>
   )
