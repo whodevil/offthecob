@@ -18,4 +18,13 @@ module "api" {
     SERVICE_VERSION = var.TAG
     CORS_ORIGIN = "https://${local.domain_name}"
   }
+
+  attach_policy_statements = true
+  policy_statements = {
+    cloudwatch = {
+      effect    = "Allow",
+      actions   = ["logs:CreateLogStream", "logs:PutLogEvents"],
+      resources = [""]
+    }
+  }
 }
