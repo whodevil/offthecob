@@ -1,0 +1,44 @@
+
+<div id="uterance-light-mode" display="none">
+    <script src="https://utteranc.es/client.js"
+        repo="whodevil/offthecob-comments"
+        issue-term="pathname"
+        theme="github-light"
+        crossorigin="anonymous"
+        async>
+    </script>
+</div>
+<div id="uterance-dark-mode" display="none">
+        <script src="https://utteranc.es/client.js"
+                repo="whodevil/offthecob-comments"
+                issue-term="pathname"
+                theme="github-dark"
+                crossorigin="anonymous"
+                async>
+        </script>
+</div>
+<script>
+ const setTheme = (localTheme) => {
+         const darkMode = document.getElementById("uterance-dark-mode")
+         const lightMode = document.getElementById("uterance-light-mode")
+         if(localTheme && localTheme === "light-theme") {
+                 darkMode.style.display = "none"
+                 lightMode.style.display = "inherit"
+                 window.localStorage && window.localStorage.setItem("uterance-theme", "dark")
+         } else {
+                 darkMode.style.display = "inherit"
+                 lightMode.style.display = "none"
+                 window.localStorage && window.localStorage.setItem("uterance-theme", "light")
+         }
+ }
+ setTheme(window.localStorage && window.localStorage.getItem("theme"))
+
+ document.querySelector(".theme-toggle").addEventListener("click", () => {
+         const currentTheme = window.localStorage && window.localStorage.getItem("uterance-theme")
+         if(currentTheme === "light") {
+                 setTheme("light-theme")
+         } else {
+                 setTheme("dark-theme")
+         }
+ })
+</script>
