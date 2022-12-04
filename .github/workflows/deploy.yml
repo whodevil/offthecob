@@ -25,6 +25,7 @@ jobs:
       AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
       ZONE_ID: ${{ secrets.ZONE_ID }}
   production:
+    if: ${{ github.event_name != 'pull_request' }}
     uses: ./.github/workflows/terraform.yml
     needs: [ ui, jvm, staging ]
     with:
