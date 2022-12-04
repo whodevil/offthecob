@@ -18,18 +18,18 @@ jobs:
       packages: write
     steps:
       - uses: actions/checkout@v1
-      - uses: actions/setup-node@v3
+      - name: Setup Hugo
+        uses: peaceiris/actions-hugo@v2
         with:
-          node-version: 14
-          cache: 'yarn'
-          cache-dependency-path: 'ui/yarn.lock'
-      - run: yarn install
-      - run: yarn build
+          hugo-version: '0.107.0'
+          extended: true
+      - name: Build
+        run: hugo --minify
       - id: vars
         run: echo "::set-output name=sha_short::$(git rev-parse --short HEAD)"
       - id: archive_name
         run: echo "##[set-output name=name;]$(echo theagainagain-${{ steps.vars.outputs.sha_short }}.tar.gz)"
-      - run: tar -czvf ${{steps.archive_name.outputs.name}} ./build
+      - run: tar -czvf ${{steps.archive_name.outputs.name}} ./public
       - uses: actions/upload-artifact@v3
         with:
           name: ${{steps.archive_name.outputs.name}}

@@ -48,61 +48,81 @@ resource "aws_s3_bucket_acl" "website" {
 }
 
 resource "aws_s3_object" "html" {
-  for_each = fileset("build/", "**/*.html")
+  for_each = fileset("public/", "**/*.html")
 
   bucket       = aws_s3_bucket.website.bucket
   key          = each.value
-  source       = "build/${each.value}"
-  etag         = filemd5("build/${each.value}")
+  source       = "public/${each.value}"
+  etag         = filemd5("public/${each.value}")
   content_type = "text/html"
 }
 
 resource "aws_s3_object" "svg" {
-  for_each = fileset("build/", "**/*.svg")
+  for_each = fileset("public/", "**/*.svg")
 
   bucket       = aws_s3_bucket.website.bucket
   key          = each.value
-  source       = "build/${each.value}"
-  etag         = filemd5("build/${each.value}")
+  source       = "public/${each.value}"
+  etag         = filemd5("public/${each.value}")
   content_type = "image/svg+xml"
 }
 
 resource "aws_s3_object" "css" {
-  for_each = fileset("build/", "**/*.css")
+  for_each = fileset("public/", "**/*.css")
 
   bucket       = aws_s3_bucket.website.bucket
   key          = each.value
-  source       = "build/${each.value}"
-  etag         = filemd5("build/${each.value}")
+  source       = "public/${each.value}"
+  etag         = filemd5("public/${each.value}")
   content_type = "text/css"
 }
 
 resource "aws_s3_object" "js" {
-  for_each = fileset("build/", "**/*.js")
+  for_each = fileset("public/", "**/*.js")
 
   bucket       = aws_s3_bucket.website.bucket
   key          = each.value
-  source       = "build/${each.value}"
-  etag         = filemd5("build/${each.value}")
+  source       = "public/${each.value}"
+  etag         = filemd5("public/${each.value}")
   content_type = "application/javascript"
 }
 
 resource "aws_s3_object" "images" {
-  for_each = fileset("build/", "**/*.png")
+  for_each = fileset("public/", "**/*.png")
 
   bucket       = aws_s3_bucket.website.bucket
   key          = each.value
-  source       = "build/${each.value}"
-  etag         = filemd5("build/${each.value}")
+  source       = "public/${each.value}"
+  etag         = filemd5("public/${each.value}")
   content_type = "image/png"
 }
 
-resource "aws_s3_object" "json" {
-  for_each = fileset("build/", "**/*.json")
+resource "aws_s3_object" "jpegs" {
+  for_each = fileset("public/", "**/*.jpg")
 
   bucket       = aws_s3_bucket.website.bucket
   key          = each.value
-  source       = "build/${each.value}"
-  etag         = filemd5("build/${each.value}")
+  source       = "public/${each.value}"
+  etag         = filemd5("public/${each.value}")
+  content_type = "image/jpeg"
+}
+
+resource "aws_s3_object" "woff2" {
+  for_each = fileset("public/", "**/*.woff2")
+
+  bucket       = aws_s3_bucket.website.bucket
+  key          = each.value
+  source       = "public/${each.value}"
+  etag         = filemd5("public/${each.value}")
+  content_type = "font/woff2"
+}
+
+resource "aws_s3_object" "json" {
+  for_each = fileset("public/", "**/*.json")
+
+  bucket       = aws_s3_bucket.website.bucket
+  key          = each.value
+  source       = "public/${each.value}"
+  etag         = filemd5("public/${each.value}")
   content_type = "application/json"
 }
