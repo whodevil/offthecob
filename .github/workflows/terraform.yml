@@ -59,7 +59,7 @@ jobs:
       - name: Login to Amazon ECR
         id: login-ecr
         uses: aws-actions/amazon-ecr-login@v1
-      - run: echo "::set-output name=id::${{ steps.login-ecr.outputs.registry }}/${{ github.repository }}-${{ inputs.environment }}:${{ inputs.tag }}"
+      - run: echo "id=${{ steps.login-ecr.outputs.registry }}/${{ github.repository }}-${{ inputs.environment }}:${{ inputs.tag }}" >> $GITHUB_OUTPUT
         id: image
       - run: skopeo copy docker://ghcr.io/${{ github.repository }}:${{ inputs.tag }} docker://${{ steps.image.outputs.id }}
       - uses: actions/download-artifact@v3
