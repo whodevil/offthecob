@@ -15,6 +15,9 @@ on:
       uiArtifactName:
         required: true
         type: string
+      plan:
+        required: true
+        type: string
 jobs:
   tfApply:
     runs-on: ubuntu-latest
@@ -40,15 +43,14 @@ jobs:
         with:
           name: ${{ inputs.uiArtifactName }}
           path: terraform/
-      - uses: actions/download-artifact@v3
-        with:
-          name: tfPlan-${{ inputs.environment }}
       - run: tar -xzf ${{ inputs.uiArtifactName }}
       - uses: hashicorp/setup-terraform@v2
         with:
           terraform_version: 1.2.0
-      - run: terraform fmt
-      - run: terraform init
-      - run: terraform validate
-      - run: terraform workspace select ${{ inputs.environment }}
-      - run: terraform apply -auto-approve tfPlan-${{ inputs.environment }}
+      - run: |
+          terraform fmt
+          terraform init
+          terraform validate
+          terraform workspace select ${{ inputs.environment }}
+          echo ${{ inputs.plan }} > tfPlan
+          terraform apply -auto-approve tfPlan

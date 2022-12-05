@@ -18,9 +18,15 @@ on:
       tag:
         required: true
         type: string
+    outputs:
+      plan:
+        description: "a tar.gz of the UI artifact uploaded to github artifacts repo"
+        value: ${{ jobs.tf-plan.outputs.tfPlanOutput }}
 jobs:
   tf-plan:
     runs-on: ubuntu-latest
+    outputs:
+      tfPlanOutput: ${{steps.plan.outputs.output}}
     permissions:
       contents: read
       packages: read
@@ -65,14 +71,13 @@ jobs:
       - uses: hashicorp/setup-terraform@v2
         with:
           terraform_version: 1.2.0
-      - run: terraform fmt
-      - run: terraform init
-      - run: terraform validate
-      - run: terraform workspace select ${{ inputs.environment }}
-      - run: terraform plan -out=.tfPlan
+      - id: plan
         env:
           TF_VAR_API_IMAGE: ${{ steps.image.outputs.id }}
-      - uses: actions/upload-artifact@v3
-        with:
-          name: tfPlan-${{ inputs.environment }}
-          path: .tfPlan
+        run: |
+          terraform fmt
+          terraform init
+          terraform validate
+          terraform workspace select ${{ inputs.environment }}
+          terraform plan -out=.tfPlan
+          echo "output=$(cat .tfPlan)" >> $GITHUB_OUTPUT
