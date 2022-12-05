@@ -12,11 +12,10 @@ jobs:
     secrets:
       DOCKER_USERNAME: ${{ secrets.DOCKER_USERNAME }}
       DOCKER_PASSWORD: ${{ secrets.DOCKER_PASSWORD }}
-  staging:
-    uses: ./.github/workflows/terraform.yml
-    needs: [ui, jvm]
+  staging-plan:
+    uses: ./.github/workflows/tf-plan.yml
+    needs: [ ui, jvm ]
     with:
-      apply: ${{ github.event_name != 'pull_request' }}
       environment: staging
       uiArtifactName: ${{ needs.ui.outputs.archive }}
       tag: ${{ needs.jvm.outputs.tag }}
@@ -24,15 +23,35 @@ jobs:
       AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
       AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
       ZONE_ID: ${{ secrets.ZONE_ID }}
-  production:
+  staging-apply:
     if: ${{ github.event_name != 'pull_request' }}
-    uses: ./.github/workflows/terraform.yml
-    needs: [ ui, jvm, staging ]
+    uses: ./.github/workflows/tf-apply.yml
+    needs: [ staging-plan ]
     with:
-      apply: ${{ github.event_name != 'pull_request' }}
+      environment: staging
+      uiArtifactName: ${{ needs.ui.outputs.archive }}
+    secrets:
+      AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+      AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+      ZONE_ID: ${{ secrets.ZONE_ID }}
+  production-plan:
+    uses: ./.github/workflows/tf-plan.yml
+    needs: [ ui, jvm ]
+    with:
       environment: production
       uiArtifactName: ${{ needs.ui.outputs.archive }}
       tag: ${{ needs.jvm.outputs.tag }}
+    secrets:
+      AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+      AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+      ZONE_ID: ${{ secrets.ZONE_ID }}
+  production-apply:
+    if: ${{ github.event_name != 'pull_request' }}
+    uses: ./.github/workflows/tf-apply.yml
+    needs: [ production-plan ]
+    with:
+      environment: production
+      uiArtifactName: ${{ needs.ui.outputs.archive }}
     secrets:
       AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
       AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}

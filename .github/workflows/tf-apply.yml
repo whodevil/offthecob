@@ -1,4 +1,4 @@
-name: "Terraform"
+name: "Terraform Apply"
 on:
   workflow_call:
     secrets:
@@ -12,17 +12,11 @@ on:
       environment:
         required: true
         type: string
-      apply:
-        required: true
-        type: boolean
       uiArtifactName:
         required: true
         type: string
-      tag:
-        required: true
-        type: string
 jobs:
-  terraform:
+  tfApply:
     runs-on: ubuntu-latest
     permissions:
       contents: read
@@ -32,8 +26,6 @@ jobs:
       AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
       AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
       AWS_REGION: 'us-west-2'
-      TF_VAR_ZONE_ID: ${{ secrets.ZONE_ID }}
-      TF_VAR_TAG: ${{ inputs.tag }}
     defaults:
       run:
         working-directory: terraform
@@ -44,27 +36,13 @@ jobs:
           aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           aws-region: us-west-2
-      - uses: actions/setup-python@v4
-        with:
-          python-version: '3.x'
-      - run: pip install awscli
-      - run: aws ecr create-repository --repository-name ${{ github.repository }}-${{ inputs.environment }} || true
-      - name: Log in to GitHub Registry
-        uses: docker/login-action@f054a8b539a109f9f41c372932f1ae047eff08c9
-        with:
-          registry: ghcr.io
-          username: ${{ github.actor }}
-          password: ${{ secrets.GITHUB_TOKEN }}
-      - name: Login to Amazon ECR
-        id: login-ecr
-        uses: aws-actions/amazon-ecr-login@v1
-      - run: echo "id=${{ steps.login-ecr.outputs.registry }}/${{ github.repository }}-${{ inputs.environment }}:${{ inputs.tag }}" >> $GITHUB_OUTPUT
-        id: image
-      - run: skopeo copy docker://ghcr.io/${{ github.repository }}:${{ inputs.tag }} docker://${{ steps.image.outputs.id }}
       - uses: actions/download-artifact@v3
         with:
           name: ${{ inputs.uiArtifactName }}
           path: terraform/
+      - uses: actions/download-artifact@v3
+        with:
+          name: tfPlan-${{ inputs.environment }}
       - run: tar -xzf ${{ inputs.uiArtifactName }}
       - uses: hashicorp/setup-terraform@v2
         with:
@@ -73,8 +51,4 @@ jobs:
       - run: terraform init
       - run: terraform validate
       - run: terraform workspace select ${{ inputs.environment }}
-      - run: terraform plan -out=.tfPlan
-        env:
-          TF_VAR_API_IMAGE: ${{ steps.image.outputs.id }}
-      - run: terraform apply -auto-approve .tfPlan
-        if: inputs.apply == true
+      - run: terraform apply -auto-approve tfPlan-${{ inputs.environment }}
