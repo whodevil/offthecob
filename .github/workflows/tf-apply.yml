@@ -53,4 +53,5 @@ jobs:
           terraform init
           terraform validate
           terraform workspace select ${{ inputs.environment }}
-          terraform apply -auto-approve .tfPlan-${{ inputs.environment }}
+          ls -la
+          terraform apply -auto-approve tfPlan
