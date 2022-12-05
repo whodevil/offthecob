@@ -1,4 +1,4 @@
-name: "Terraform"
+name: "Terraform Plan"
 on:
   workflow_call:
     secrets:
@@ -12,9 +12,6 @@ on:
       environment:
         required: true
         type: string
-      apply:
-        required: true
-        type: boolean
       uiArtifactName:
         required: true
         type: string
@@ -22,12 +19,11 @@ on:
         required: true
         type: string
 jobs:
-  terraform:
+  tf-plan:
     runs-on: ubuntu-latest
     permissions:
       contents: read
       packages: read
-    environment: ${{ inputs.environment }}
     env:
       AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
       AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
@@ -76,5 +72,7 @@ jobs:
       - run: terraform plan -out=.tfPlan
         env:
           TF_VAR_API_IMAGE: ${{ steps.image.outputs.id }}
-      - run: terraform apply -auto-approve .tfPlan
-        if: inputs.apply == true
+      - uses: actions/upload-artifact@v3
+        with:
+          name: tfPlan-${{ inputs.environment }}
+          path: .tfPlan

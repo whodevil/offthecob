@@ -1,0 +1,54 @@
+name: "Terraform Apply"
+on:
+  workflow_call:
+    secrets:
+      AWS_ACCESS_KEY_ID:
+        required: true
+      AWS_SECRET_ACCESS_KEY:
+        required: true
+      ZONE_ID:
+        required: true
+    inputs:
+      environment:
+        required: true
+        type: string
+      uiArtifactName:
+        required: true
+        type: string
+jobs:
+  tfApply:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      packages: read
+    environment: ${{ inputs.environment }}
+    env:
+      AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+      AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+      AWS_REGION: 'us-west-2'
+    defaults:
+      run:
+        working-directory: terraform
+    steps:
+      - uses: actions/checkout@v3
+      - uses: aws-actions/configure-aws-credentials@v1-node16
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: us-west-2
+      - uses: actions/download-artifact@v3
+        with:
+          name: ${{ inputs.uiArtifactName }}
+          path: terraform/
+      - uses: actions/download-artifact@v3
+        with:
+          name: tfPlan-${{ inputs.environment }}
+      - run: tar -xzf ${{ inputs.uiArtifactName }}
+      - uses: hashicorp/setup-terraform@v2
+        with:
+          terraform_version: 1.2.0
+      - run: terraform fmt
+      - run: terraform init
+      - run: terraform validate
+      - run: terraform workspace select ${{ inputs.environment }}
+      - run: terraform apply -auto-approve tfPlan-${{ inputs.environment }}
