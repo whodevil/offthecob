@@ -43,7 +43,7 @@ jobs:
       - run: tar -xzf ${{ inputs.uiArtifactName }}
       - uses: actions/download-artifact@v3
         with:
-          name: .tfPlan-${{ inputs.environment }}
+          name: tfPlan-${{ inputs.environment }}
           path: terraform/
       - uses: hashicorp/setup-terraform@v2
         with:

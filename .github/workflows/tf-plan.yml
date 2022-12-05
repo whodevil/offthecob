@@ -72,8 +72,9 @@ jobs:
           terraform init
           terraform validate
           terraform workspace select ${{ inputs.environment }}
-          terraform plan -out=.tfPlan-${{ inputs.environment }}
+          terraform plan -out=tfPlan
       - uses: actions/upload-artifact@v3
         with:
           if-no-files-found: error
-          path: terraform/.tfPlan-${{ inputs.environment }}
+          name: tfPlan-${{ inputs.environment }}
+          path: terraform/tfPlan
