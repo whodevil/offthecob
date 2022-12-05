@@ -75,4 +75,5 @@ jobs:
           terraform plan -out=.tfPlan-${{ inputs.environment }}
       - uses: actions/upload-artifact@v3
         with:
-          path: .tfPlan-${{ inputs.environment }}
+          if-no-files-found: error
+          path: ./.tfPlan-${{ inputs.environment }}
