@@ -42,7 +42,8 @@ jobs:
           path: terraform/
       - run: |
           ls -la
-          tar -xzf ${{ inputs.uiArtifactName }}
+          echo "ARTIFACT NAME ${{ inputs.uiArtifactName }}"
+          tar xzf ${{ inputs.uiArtifactName }}
       - uses: actions/download-artifact@v3
         with:
           name: tfPlan-${{ inputs.environment }}
