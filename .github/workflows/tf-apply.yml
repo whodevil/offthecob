@@ -44,6 +44,7 @@ jobs:
       - uses: actions/download-artifact@v3
         with:
           name: .tfPlan-${{ inputs.environment }}
+          path: terraform/
       - uses: hashicorp/setup-terraform@v2
         with:
           terraform_version: 1.2.0
