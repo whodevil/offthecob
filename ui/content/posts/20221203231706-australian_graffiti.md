@@ -1,9 +1,10 @@
 +++
 title = "Australian Graffiti"
-lastmod = 2022-12-04T14:49:57-08:00
+lastmod = 2022-12-04T17:27:16-08:00
 tags = ["graffiti", "photography"]
 draft = false
 comments = false
+images = ["/ox-hugo/_20221203_233137R0002042.jpg"]
 +++
 
 {{< figure src="/ox-hugo/_20221203_232449R0001956.jpg" >}}
