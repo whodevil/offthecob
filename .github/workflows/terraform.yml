@@ -33,7 +33,6 @@ jobs:
       AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
       AWS_REGION: 'us-west-2'
       TF_VAR_ZONE_ID: ${{ secrets.ZONE_ID }}
-      TF_VAR_DOMAIN_NAME: ${{ secrets.TF_VAR_DOMAIN_NAME }}
       TF_VAR_TAG: ${{ inputs.tag }}
     defaults:
       run:
