@@ -26,7 +26,7 @@ jobs:
   staging-apply:
     if: ${{ github.event_name != 'pull_request' }}
     uses: ./.github/workflows/tf-apply.yml
-    needs: [ staging-plan ]
+    needs: [ staging-plan, ui ]
     with:
       environment: staging
       uiArtifactName: ${{ needs.ui.outputs.archive }}
@@ -48,7 +48,7 @@ jobs:
   production-apply:
     if: ${{ github.event_name != 'pull_request' }}
     uses: ./.github/workflows/tf-apply.yml
-    needs: [ production-plan ]
+    needs: [ production-plan, ui ]
     with:
       environment: production
       uiArtifactName: ${{ needs.ui.outputs.archive }}
