@@ -40,7 +40,9 @@ jobs:
         with:
           name: ${{ inputs.uiArtifactName }}
           path: terraform/
-      - run: tar -xzf ${{ inputs.uiArtifactName }}
+      - run: |
+          ls -la
+          tar -xzf ${{ inputs.uiArtifactName }}
       - uses: actions/download-artifact@v3
         with:
           name: tfPlan-${{ inputs.environment }}
