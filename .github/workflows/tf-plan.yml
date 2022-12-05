@@ -12,9 +12,6 @@ on:
       environment:
         required: true
         type: string
-      apply:
-        required: true
-        type: boolean
       uiArtifactName:
         required: true
         type: string
