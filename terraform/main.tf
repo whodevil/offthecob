@@ -11,5 +11,4 @@ locals {
   root_host_name     = "offthecob.info"
   domain_name_prefix = terraform.workspace == "production" ? "www" : terraform.workspace
   domain_name        = "${local.domain_name_prefix}.${local.root_host_name}"
-  api_name           = terraform.workspace == "production" ? "api.${local.root_host_name}" : "api-${terraform.workspace}.${local.root_host_name}"
 }
