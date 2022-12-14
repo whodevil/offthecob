@@ -27,7 +27,6 @@ jobs:
     secrets:
       AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
       AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-      ZONE_ID: ${{ secrets.ZONE_ID }}
   production-plan:
     uses: ./.github/workflows/tf-plan.yml
     needs: [ ui ]
@@ -48,4 +47,3 @@ jobs:
     secrets:
       AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
       AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-      ZONE_ID: ${{ secrets.ZONE_ID }}
