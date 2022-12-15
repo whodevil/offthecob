@@ -29,6 +29,15 @@ jobs:
         working-directory: terraform
     steps:
       - uses: actions/checkout@v3
+      - uses: aws-actions/configure-aws-credentials@v1-node16
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: us-west-2
+      - uses: actions/setup-python@v4
+        with:
+          python-version: '3.x'
+      - run: pip install awscli
       - uses: actions/download-artifact@v3
         with:
           name: ${{ inputs.uiArtifactName }}
@@ -41,9 +50,11 @@ jobs:
       - uses: hashicorp/setup-terraform@v2
         with:
           terraform_version: 1.2.0
-      - run: |
+      - name: terraform apply
+        run: |
           terraform fmt
           terraform init
           terraform validate
           terraform workspace select ${{ inputs.environment }}
           terraform apply -auto-approve tfPlan
+      - run: aws cloudfront create-invalidation --distribution-id ${{ secrets.DISTRIBUTION_ID }} --paths '/*'
