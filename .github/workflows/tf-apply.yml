@@ -6,6 +6,8 @@ on:
         required: true
       AWS_SECRET_ACCESS_KEY:
         required: true
+      DISTRIBUTION_ID:
+        required: true
     inputs:
       environment:
         required: true
