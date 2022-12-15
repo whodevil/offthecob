@@ -1,6 +1,6 @@
 +++
 title = "Git Commit Signing"
-lastmod = 2022-12-14T13:35:09-08:00
+lastmod = 2022-12-15T12:16:15-08:00
 tags = ["git", "github", "gpg", "identity-management", "best-practices"]
 draft = false
 description = "Why git commit signing matters and how to implement it."
@@ -13,7 +13,7 @@ Git is a distributed repository, when a developer clones a git repository, the d
 repository and all of it's history. When pushing a branch, the developer is telling the origin repository about
 a branch they've made changes to, and pull requests exist for merging that new code into the main branch on origin.
 While it is possible to protect the trunk e.g. "main" from having history rewritten, there is nothing stopping a
-malicious insider from writing commits as a different user. PGP signing of commits is a mechanism to prove the
+malicious insider from writing commits as a different user. GPG signing of commits is a mechanism to prove the
 git log is not lying about who the author is. After generating a signing key, the user uploads their public key
 to GitHub, so that the system can verify the signature. While some would argue the threat might be
 minimal, the mantra in the security space is "defense in depth." This article plans to illustrate that implementing
