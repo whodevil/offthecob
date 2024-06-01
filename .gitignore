@@ -7,3 +7,4 @@ build
 tf-env.zsh
 /.idea/*
 user.gradle
+**/.DS_Store
