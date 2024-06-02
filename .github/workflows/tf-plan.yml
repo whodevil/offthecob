@@ -30,13 +30,13 @@ jobs:
       run:
         working-directory: terraform
     steps:
-      - uses: actions/checkout@v3
-      - uses: actions/download-artifact@v3
+      - uses: actions/checkout@v4
+      - uses: actions/download-artifact@v4
         with:
           name: ${{ inputs.uiArtifactName }}
           path: terraform/
       - run: tar -xzf ${{ inputs.uiArtifactName }}
-      - uses: hashicorp/setup-terraform@v2
+      - uses: hashicorp/setup-terraform@v3
         with:
           terraform_version: 1.2.0
       - run: |
@@ -45,7 +45,7 @@ jobs:
           terraform validate
           terraform workspace select ${{ inputs.environment }}
           terraform plan -out=tfPlan
-      - uses: actions/upload-artifact@v3
+      - uses: actions/upload-artifact@v4
         with:
           if-no-files-found: error
           name: tfPlan-${{ inputs.environment }}
