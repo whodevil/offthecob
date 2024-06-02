@@ -30,26 +30,26 @@ jobs:
       run:
         working-directory: terraform
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
       - uses: aws-actions/configure-aws-credentials@v1-node16
         with:
           aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           aws-region: us-west-2
-      - uses: actions/setup-python@v4
+      - uses: actions/setup-python@v5
         with:
           python-version: '3.x'
       - run: pip install awscli
-      - uses: actions/download-artifact@v3
+      - uses: actions/download-artifact@v4
         with:
           name: ${{ inputs.uiArtifactName }}
           path: terraform/
       - run: tar xzf ${{ inputs.uiArtifactName }}
-      - uses: actions/download-artifact@v3
+      - uses: actions/download-artifact@v4
         with:
           name: tfPlan-${{ inputs.environment }}
           path: terraform/
-      - uses: hashicorp/setup-terraform@v2
+      - uses: hashicorp/setup-terraform@v3
         with:
           terraform_version: 1.2.0
       - name: terraform apply
