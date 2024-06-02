@@ -32,7 +32,7 @@ jobs:
       - id: archive_name
         run: echo "name=$(echo theagainagain-${{ steps.vars.outputs.sha_short }}.tar.gz)" >> $GITHUB_OUTPUT
       - run: tar -czvf ${{steps.archive_name.outputs.name}} ./public
-      - uses: actions/upload-artifact@v3
+      - uses: actions/upload-artifact@v4
         with:
           name: ${{steps.archive_name.outputs.name}}
           path: ui/${{steps.archive_name.outputs.name}}
