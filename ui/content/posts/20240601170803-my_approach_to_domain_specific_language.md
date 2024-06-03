@@ -1,6 +1,6 @@
 +++
 title = "My Approach to Domain Specific Language"
-lastmod = 2024-06-02T11:33:58-07:00
+lastmod = 2024-06-02T13:35:07-07:00
 tags = ["kotlin", "groovy", "dsl", "functional", "programming"]
 draft = false
 comments = true
@@ -222,4 +222,4 @@ class MyTest extends IntegrationSpecification {
 
 ## Conclusion {#conclusion}
 
-I've used these patterns extensively in my career, and the common sentiment from the other developers on my team is, "this is really fun to work with." It enables us to focus on the business value we are trying to deliver and hide the boiler plate. Because of it's fluent nature, you can model the DSL after the problems your business is asking you to solve. Admittedly, spark's builder syntax is a perfect fit for this type of pattern, and I'm sure I'm not the first person to come up with something like this because I believe Scala also has similar functionality, but meet the problems with the tools you have, and I know Kotlin and Groovy, so that's what I've employed here.
+I've used these patterns extensively in my career, and the common sentiment from the other developers on my team is, "this is really fun to work with." It enables us to focus on the business value we are trying to deliver and hide the boiler plate. Because of it's fluent nature, you can model the DSL after the problems your business is asking you to solve. Admittedly, spark's builder syntax is a perfect fit for this type of pattern, and I'm sure I'm not the first person to come up with something like this because I believe Scala also has similar functionality. Meet the problems with the tools you have, and I know Kotlin and Groovy, so that's what I've employed here.
