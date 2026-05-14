@@ -30,13 +30,13 @@ jobs:
       run:
         working-directory: terraform
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/download-artifact@v4
+      - uses: actions/checkout@v6
+      - uses: actions/download-artifact@v7
         with:
           name: ${{ inputs.uiArtifactName }}
           path: terraform/
       - run: tar -xzf ${{ inputs.uiArtifactName }}
-      - uses: opentofu/setup-opentofu@v1
+      - uses: opentofu/setup-opentofu@v2
         with:
           tofu_version: "1.11.7"
       - run: |
@@ -45,7 +45,7 @@ jobs:
           tofu validate
           tofu workspace select ${{ inputs.environment }}
           tofu plan -out=tfPlan
-      - uses: actions/upload-artifact@v4
+      - uses: actions/upload-artifact@v7
         with:
           if-no-files-found: error
           name: tfPlan-${{ inputs.environment }}
