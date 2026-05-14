@@ -1,1 +1,12 @@
+# Gallery data file
+# Each image entry should have:
+#   src: site-root-relative path (e.g., "/images/gallery/photo.jpg")
+#   title: optional display title
+#   tags: list of strings (no spaces, use hyphens)
+#
+# Example:
+#   - src: "/images/gallery/sunset.jpg"
+#     title: "Sunset"
+#     tags: ["digital", "color"]
+
 images: []
