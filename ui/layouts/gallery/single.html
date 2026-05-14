@@ -23,14 +23,14 @@
     {{ end }}
   </div>
 
-  <div class="zero-results" style="display:none;">No images match this tag.</div>
+  <div class="zero-results" style="display:none;" role="status">No images match this tag.</div>
 
   <!-- Gallery grid -->
   <div class="gallery-grid">
     {{ range $images }}
       {{ $lowerTags := slice }}
       {{ range .tags }}{{ $lowerTags = $lowerTags | append (lower .) }}{{ end }}
-      <div class="gallery-item" data-tags="{{ delimit $lowerTags " " }}">
+      <div class="gallery-item" data-tags="{{ delimit $lowerTags " " }}" role="button" tabindex="0">
         <img src="{{ .src }}" alt="{{ with .title }}{{ . }}{{ end }}" loading="lazy">
         {{ with .title }}
           <div class="item-overlay">
@@ -42,10 +42,10 @@
   </div>
 
   <!-- Lightbox -->
-  <div id="lightbox" class="lightbox">
+  <div id="lightbox" class="lightbox" role="dialog" aria-modal="true">
     <div class="lightbox-backdrop"></div>
-    <button class="lightbox-prev" aria-label="Previous image">&#9664;</button>
-    <button class="lightbox-next" aria-label="Next image">&#9654;</button>
+    <button type="button" class="lightbox-prev" aria-label="Previous image">&#9664;</button>
+    <button type="button" class="lightbox-next" aria-label="Next image">&#9654;</button>
     <div class="lightbox-content">
       <img class="lightbox-img" src="" alt="">
       <div class="lightbox-caption">
@@ -53,7 +53,7 @@
         <p class="lightbox-tags"></p>
       </div>
     </div>
-    <button class="lightbox-close">&#10005; Close</button>
+    <button type="button" class="lightbox-close" aria-label="Close lightbox">&#10005; Close</button>
   </div>
 
   <style>
@@ -288,6 +288,12 @@
     galleryItems.forEach(item => {
       item.addEventListener('click', function() {
         openLightbox(this);
+      });
+      item.addEventListener('keydown', function(e) {
+        if (e.key === 'Enter' || e.key === ' ') {
+          e.preventDefault();
+          openLightbox(this);
+        }
       });
     });
 
