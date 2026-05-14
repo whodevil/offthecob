@@ -1,0 +1,323 @@
+{{ define "main" }}
+{{ $gallery := $.Site.Data.gallery | default dict }}
+{{ $images := $gallery.images | default slice }}
+
+{{ if not $images }}
+  <p>Gallery coming soon.</p>
+{{ else }}
+  <!-- Collect all unique tags -->
+  {{ $allTags := slice }}
+  {{ range $images }}
+    {{ range .tags }}
+      {{ if not (in $allTags .) }}
+        {{ $allTags = $allTags | append . }}
+      {{ end }}
+    {{ end }}
+  {{ end }}
+
+  <!-- Tag bar -->
+  <div class="tag-bar">
+    <button class="tag-button active" data-tag="__all__">All</button>
+    {{ range $allTags }}
+      <button class="tag-button" data-tag="{{ lower . }}">{{ . }}</button>
+    {{ end }}
+  </div>
+
+  <div class="zero-results" style="display:none;" role="status" aria-live="polite">No images match this tag.</div>
+
+  <!-- Gallery grid -->
+  <div class="gallery-grid">
+    {{ range $images }}
+      {{ $lowerTags := slice }}
+      {{ range .tags }}{{ $lowerTags = $lowerTags | append (lower .) }}{{ end }}
+      <div class="gallery-item" data-tags="{{ delimit $lowerTags " " }}" role="button" tabindex="0">
+        <img src="{{ .src }}" alt="{{ with .title }}{{ . }}{{ else }}Gallery image{{ end }}" loading="lazy">
+        {{ with .title }}
+          <div class="item-overlay">
+            <span class="item-title">{{ . }}</span>
+          </div>
+        {{ end }}
+      </div>
+    {{ end }}
+  </div>
+
+  <!-- Lightbox -->
+  <div id="lightbox" class="lightbox" role="dialog" aria-modal="true">
+    <div class="lightbox-backdrop"></div>
+    <button type="button" class="lightbox-prev" aria-label="Previous image">&#9664;</button>
+    <button type="button" class="lightbox-next" aria-label="Next image">&#9654;</button>
+    <div class="lightbox-content">
+      <img class="lightbox-img" src="" alt="">
+      <div class="lightbox-caption">
+        <h3 class="lightbox-title"></h3>
+        <p class="lightbox-tags"></p>
+      </div>
+    </div>
+    <button type="button" class="lightbox-close" aria-label="Close lightbox">&#10005; Close</button>
+  </div>
+
+  <style>
+  .gallery-grid {
+    display: grid;
+    grid-template-columns: repeat(5, 1fr);
+    gap: 0.5rem;
+    position: relative;
+  }
+  @media (max-width: 768px) {
+    .gallery-grid { grid-template-columns: repeat(3, 1fr); }
+  }
+  @media (max-width: 480px) {
+    .gallery-grid { grid-template-columns: repeat(2, 1fr); }
+  }
+
+  .gallery-item {
+    aspect-ratio: 1 / 1;
+    overflow: hidden;
+    cursor: pointer;
+    position: relative;
+  }
+  .gallery-item:focus {
+    outline: 2px solid #333;
+    outline-offset: 2px;
+  }
+  .gallery-item img {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+    transition: transform 0.2s ease;
+    display: block;
+  }
+  .gallery-item:hover img {
+    transform: scale(1.03);
+  }
+
+  .item-overlay {
+    position: absolute;
+    inset: 0;
+    background: rgba(0,0,0,0.5);
+    color: #fff;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    opacity: 0;
+    transition: opacity 0.2s ease;
+    pointer-events: none;
+  }
+  .gallery-item:hover .item-overlay {
+    opacity: 1;
+  }
+  .item-title {
+    font-size: 0.9rem;
+    text-align: center;
+    padding: 0.5rem;
+  }
+
+  .gallery-item.hidden {
+    opacity: 0;
+    transform: scale(0.95);
+    pointer-events: none;
+    transition: opacity 0.2s ease, transform 0.2s ease;
+  }
+
+  .tag-bar {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+    margin-bottom: 1.5rem;
+  }
+  .tag-button {
+    padding: 0.35rem 0.75rem;
+    border: 1px solid #ccc;
+    background: #fff;
+    cursor: pointer;
+    border-radius: 4px;
+    font-size: 0.85rem;
+  }
+  .tag-button:focus {
+    outline: 2px solid #333;
+    outline-offset: 2px;
+  }
+  .tag-button.active {
+    background: #333;
+    color: #fff;
+    border-color: #333;
+  }
+
+  .lightbox {
+    position: fixed;
+    inset: 0;
+    z-index: 1000;
+    display: none;
+    align-items: center;
+    justify-content: center;
+  }
+  .lightbox.active {
+    display: flex;
+  }
+  .lightbox-backdrop {
+    position: absolute;
+    inset: 0;
+    background: rgba(0,0,0,0.85);
+    cursor: pointer;
+  }
+  .lightbox-content {
+    position: relative;
+    z-index: 1;
+    max-width: 90vw;
+    max-height: 90vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
+  .lightbox-img {
+    max-width: 90vw;
+    max-height: 85vh;
+    object-fit: contain;
+    display: block;
+  }
+  .lightbox-caption {
+    margin-top: 1rem;
+    text-align: center;
+    color: #fff;
+  }
+  .lightbox-title {
+    margin: 0;
+    font-size: 1.2rem;
+  }
+  .lightbox-tags {
+    margin: 0.25rem 0 0;
+    font-size: 0.85rem;
+    color: #ccc;
+  }
+  .lightbox-close {
+    position: absolute;
+    top: 1rem;
+    right: 1rem;
+    background: rgba(0,0,0,0.4);
+    border: 1px solid #fff;
+    color: #fff;
+    padding: 0.4rem 0.8rem;
+    cursor: pointer;
+    z-index: 2;
+  }
+  .lightbox-prev,
+  .lightbox-next {
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    background: rgba(0,0,0,0.4);
+    border: 1px solid #fff;
+    color: #fff;
+    padding: 0.5rem;
+    cursor: pointer;
+    z-index: 2;
+  }
+  .lightbox-prev { left: 1rem; }
+  .lightbox-next { right: 1rem; }
+  </style>
+
+  <script>
+  (function() {
+    const tagButtons = document.querySelectorAll('.tag-button');
+    const galleryItems = document.querySelectorAll('.gallery-item');
+    const zeroResults = document.querySelector('.zero-results');
+    const lightbox = document.getElementById('lightbox');
+    const lightboxImg = lightbox.querySelector('.lightbox-img');
+    const lightboxTitle = lightbox.querySelector('.lightbox-title');
+    const lightboxTags = lightbox.querySelector('.lightbox-tags');
+    const lightboxClose = lightbox.querySelector('.lightbox-close');
+    const lightboxBackdrop = lightbox.querySelector('.lightbox-backdrop');
+    const lightboxPrev = lightbox.querySelector('.lightbox-prev');
+    const lightboxNext = lightbox.querySelector('.lightbox-next');
+
+    let currentIndex = 0;
+
+    function getVisibleItems() {
+      return Array.from(document.querySelectorAll('.gallery-item:not(.hidden)'));
+    }
+
+    function openLightbox(item) {
+      const visibleItems = getVisibleItems();
+      currentIndex = visibleItems.indexOf(item);
+      updateLightbox(item);
+      lightbox.classList.add('active');
+    }
+
+    function updateLightbox(item) {
+      const img = item.querySelector('img');
+      const titleEl = item.querySelector('.item-title');
+      const tags = item.getAttribute('data-tags');
+      lightboxImg.src = img.src;
+      lightboxImg.alt = img.alt || '';
+      lightboxTitle.textContent = titleEl ? titleEl.textContent : 'Untitled';
+      lightboxTags.textContent = tags ? 'Tags: ' + tags.trim() : '';
+    }
+
+    function navigateLightbox(direction) {
+      const visibleItems = getVisibleItems();
+      if (visibleItems.length === 0) return;
+      currentIndex += direction;
+      if (currentIndex < 0) currentIndex = visibleItems.length - 1;
+      if (currentIndex >= visibleItems.length) currentIndex = 0;
+      updateLightbox(visibleItems[currentIndex]);
+    }
+
+    function closeLightbox() {
+      lightbox.classList.remove('active');
+      lightboxImg.src = '';
+    }
+
+    // Tag filtering
+    tagButtons.forEach(btn => {
+      btn.addEventListener('click', function() {
+        tagButtons.forEach(b => b.classList.remove('active'));
+        this.classList.add('active');
+        const tag = this.getAttribute('data-tag');
+        let matchCount = 0;
+        if (tag === '__all__') {
+          galleryItems.forEach(item => item.classList.remove('hidden'));
+          matchCount = galleryItems.length;
+        } else {
+          galleryItems.forEach(item => {
+            const itemTags = (item.getAttribute('data-tags') || '').split(/\s+/).filter(Boolean);
+            if (itemTags.includes(tag)) {
+              item.classList.remove('hidden');
+              matchCount++;
+            } else {
+              item.classList.add('hidden');
+            }
+          });
+        }
+        zeroResults.style.display = matchCount === 0 ? 'block' : 'none';
+      });
+    });
+
+    // Lightbox open
+    galleryItems.forEach(item => {
+      item.addEventListener('click', function() {
+        openLightbox(this);
+      });
+      item.addEventListener('keydown', function(e) {
+        if (e.key === 'Enter' || e.key === ' ') {
+          e.preventDefault();
+          openLightbox(this);
+        }
+      });
+    });
+
+    // Lightbox controls
+    lightboxClose.addEventListener('click', closeLightbox);
+    lightboxBackdrop.addEventListener('click', closeLightbox);
+    lightboxPrev.addEventListener('click', function(e) { e.stopPropagation(); navigateLightbox(-1); });
+    lightboxNext.addEventListener('click', function(e) { e.stopPropagation(); navigateLightbox(1); });
+
+    document.addEventListener('keydown', function(e) {
+      if (!lightbox.classList.contains('active')) return;
+      if (e.key === 'Escape') closeLightbox();
+      if (e.key === 'ArrowLeft') navigateLightbox(-1);
+      if (e.key === 'ArrowRight') navigateLightbox(1);
+    });
+  })();
+  </script>
+{{ end }}
+{{ end }}

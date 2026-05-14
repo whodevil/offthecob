@@ -1,0 +1,190 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+# Change to project root (where this script is located)
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+cd "$SCRIPT_DIR"
+
+GALLERY_YML="ui/data/gallery.yml"
+GALLERY_DIR="ui/static/img/gallery"
+GALLERY_WEB_PREFIX="/img/gallery"
+
+# Ensure dependencies exist
+check_dep() {
+    if ! command -v "$1" >/dev/null 2>&1; then
+        echo "Error: $1 is required but not installed." >&2
+        exit 1
+    fi
+}
+
+check_dep gum
+check_dep chafa
+check_dep yq
+check_dep jq
+check_dep fzf
+
+# Get list of images already in gallery.yml (basename only)
+existing_images=()
+while IFS= read -r src; do
+    [ -n "$src" ] && existing_images+=("$(basename "$src")")
+done < <(yq -r '.images[]?.src' "$GALLERY_YML")
+
+# Build menu items (tab-separated: display text, full file path)
+menu_items=()
+while IFS= read -r -d '' file; do
+    filename=$(basename "$file")
+
+    # Skip non-image files and hidden files
+    case "$filename" in
+        .*) continue ;;
+        *.jpg|*.jpeg|*.png|*.gif|*.webp|*.svg|*.bmp|*.tiff) ;;
+        *) continue ;;
+    esac
+
+    is_added=false
+    for existing in "${existing_images[@]}"; do
+        if [ "$existing" = "$filename" ]; then
+            is_added=true
+            break
+        fi
+    done
+
+    if [ "$is_added" = true ]; then
+        menu_items+=("✅ ${filename}"$'\t'"$file")
+    else
+        menu_items+=("➕ ${filename}"$'\t'"$file")
+    fi
+done < <(find "$GALLERY_DIR" -maxdepth 1 -type f -print0 | sort -z)
+
+if [ ${#menu_items[@]} -eq 0 ]; then
+    gum style --foreground 196 "No images found in $GALLERY_DIR"
+    exit 0
+fi
+
+# Show menu with fzf (live chafa preview in right pane)
+gum style --border double --padding "1 2" --foreground 39 "Gallery Manager"
+echo ""
+
+selected=$(printf '%s\n' "${menu_items[@]}" | fzf \
+    --delimiter=$'\t' \
+    --with-nth=1 \
+    --height=80% \
+    --layout=reverse \
+    --border \
+    --header="Select an image (preview on right)" \
+    --preview='chafa --format=symbols --size=45x20 {2}' \
+    --preview-window=right:50%:wrap) || true
+
+if [ -z "$selected" ]; then
+    gum style --foreground 240 "No selection made. Exiting."
+    exit 0
+fi
+
+# Parse selection: strip icon and get filename / filepath
+filename=$(echo "$selected" | cut -f1 | sed 's/^[✅➕] //')
+filepath=$(echo "$selected" | cut -f2)
+web_path="${GALLERY_WEB_PREFIX}/${filename}"
+
+# Determine if already added
+is_added=false
+for existing in "${existing_images[@]}"; do
+    if [ "$existing" = "$filename" ]; then
+        is_added=true
+        break
+    fi
+done
+
+# Render full-quality image after selection (native terminal graphics)
+clear
+gum style --border normal --padding "1 2" --foreground 212 "Selected: $filename"
+echo ""
+chafa --size 80x25 "$filepath"
+echo ""
+
+# Trap to clean up temp files on any exit (including Ctrl+C)
+tmp_file=""
+cleanup() {
+    [ -n "$tmp_file" ] && [ -f "$tmp_file" ] && rm -f "$tmp_file"
+}
+trap cleanup EXIT
+
+if [ "$is_added" = false ]; then
+    # New image: ask for title and tags
+    gum style --foreground 82 "This image is not in the gallery yet."
+    echo ""
+
+    if ! gum confirm "Add this image to the gallery?"; then
+        gum style --foreground 240 "Aborted. No changes made."
+        exit 0
+    fi
+
+    title=$(gum input --placeholder "Enter a display title..." --prompt "Title: ")
+    tags_input=$(gum input --placeholder "tag1, tag2, tag3" --prompt "Tags (comma-separated): ")
+
+    # Convert tags to JSON array
+    tags_json="[]"
+    if [ -n "$tags_input" ]; then
+        tags_json=$(echo "$tags_input" | tr ',' '\n' | sed 's/^[[:space:]]*//;s/[[:space:]]*$//' | jq -R . | jq -s 'map(select(length > 0))')
+    fi
+
+    # Append to gallery.yml (roundtrip through JSON for safe string handling)
+    tmp_file=$(mktemp)
+    yq -r . "$GALLERY_YML" | jq \
+        --arg src "$web_path" \
+        --arg title "$title" \
+        --argjson tags "$tags_json" \
+        '.images += [{"src": $src, "title": $title, "tags": $tags}]' | \
+        yq -y . > "$tmp_file"
+    mv "$tmp_file" "$GALLERY_YML"
+    tmp_file=""
+
+    gum style --foreground 82 "✅ Added $filename to gallery!"
+else
+    # Existing image: ask what to update
+    gum style --foreground 33 "This image is already in the gallery."
+    echo ""
+
+    action=$(gum choose "Update Title" "Update Tags" "Cancel" --header "What would you like to update?") || true
+
+    case "$action" in
+        "Update Title")
+            current_title=$(yq -r ".images[] | select(.src == \"$web_path\") | .title // empty" "$GALLERY_YML")
+            new_title=$(gum input --value "$current_title" --prompt "New Title: ")
+
+            tmp_file=$(mktemp)
+            yq -r . "$GALLERY_YML" | jq \
+                --arg web_path "$web_path" \
+                --arg new_title "$new_title" \
+                '(.images[] | select(.src == $web_path) | .title) = $new_title' | \
+                yq -y . > "$tmp_file"
+            mv "$tmp_file" "$GALLERY_YML"
+            tmp_file=""
+
+            gum style --foreground 82 "✅ Updated title for $filename!"
+            ;;
+        "Update Tags")
+            current_tags_json=$(yq ".images[] | select(.src == \"$web_path\") | .tags // []" "$GALLERY_YML")
+            current_tags=$(echo "$current_tags_json" | jq -r 'map(select(length > 0)) | join(", ")')
+            new_tags_input=$(gum input --value "$current_tags" --prompt "New Tags (comma-separated): ")
+
+            tags_json="[]"
+            if [ -n "$new_tags_input" ]; then
+                tags_json=$(echo "$new_tags_input" | tr ',' '\n' | sed 's/^[[:space:]]*//;s/[[:space:]]*$//' | jq -R . | jq -s 'map(select(length > 0))')
+            fi
+
+            tmp_file=$(mktemp)
+            yq -r . "$GALLERY_YML" | jq \
+                --arg web_path "$web_path" \
+                --argjson tags "$tags_json" \
+                '(.images[] | select(.src == $web_path) | .tags) = $tags' | \
+                yq -y . > "$tmp_file"
+            mv "$tmp_file" "$GALLERY_YML"
+            tmp_file=""
+
+            gum style --foreground 82 "✅ Updated tags for $filename!"
+            ;;
+        "Cancel"|"")
+            gum style --foreground 240 "No changes made."
+            ;;
+    esac
+fi
