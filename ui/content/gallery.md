@@ -1,4 +1,5 @@
----
-title: "Gallery"
-type: gallery
----
++++
+title = "Gallery"
+type = "gallery"
+draft = false
++++
