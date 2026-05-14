@@ -1,12 +1,89 @@
-# Gallery data file
-# Each image entry should have:
-#   src: site-root-relative path (e.g., "/img/gallery/photo.jpg")
-#   title: optional display title
-#   tags: list of strings (no spaces, use hyphens)
-#
-# Example:
-#   - src: "/img/gallery/sunset.jpg"
-#     title: "Sunset"
-#     tags: ["digital", "color"]
-
-images: []
+images:
+  - src: /img/gallery/trinidad-dada-dad.png
+    title: Trinidad Dada Dad
+    tags:
+      - digital
+      - glitch
+      - dither
+  - src: /img/gallery/face-glitch.jpg
+    title: Face Glitch
+    tags:
+      - digial
+      - glitch
+  - src: /img/gallery/20130217-19-Edit.jpg
+    title: Walkway
+    tags:
+      - contrast
+      - red-yellow
+  - src: /img/gallery/20130119-4-Edit.jpg
+    title: words
+    tags:
+      - photography
+  - src: /img/gallery/20130916-8-Edit.jpg
+    title: Portland at Dusk
+    tags:
+      - photography
+  - src: /img/gallery/dog-dog1.jpg
+    title: dog dog
+    tags:
+      - art
+      - digital
+  - src: /img/gallery/20130519-30-Edit.jpg
+    title: Bowling
+    tags:
+      - photography
+  - src: /img/gallery/silver on red3.jpg
+    title: Silver on Red
+    tags:
+      - art
+  - src: /img/gallery/66641273933391597572.jpg
+    title: No Hands
+    tags:
+      - photography
+  - src: /img/gallery/20130601-Edit.jpg
+    title: No Parking
+    tags:
+      - art
+  - src: /img/gallery/20130622-4-Edit.jpg
+    title: Street by the old apartment
+    tags:
+      - photography
+  - src: /img/gallery/20130918-58-Edit.jpg
+    title: Trees
+    tags:
+      - extended-exposure
+      - photography
+      - art
+  - src: /img/gallery/402689_710524591281_1157700672_n.jpg
+    title: Dutch catching looks
+    tags:
+      - photography
+  - src: /img/gallery/IMG_4487.jpg
+    title: Workspace
+    tags:
+      - photography
+  - src: /img/gallery/18673_545431174811_6359404_n.jpg
+    title: Heart
+    tags:
+      - college
+      - art
+      - photography
+  - src: /img/gallery/complete.jpg
+    title: penny for a thought
+    tags:
+      - college
+      - digital
+      - art
+  - src: /img/gallery/neoface copy.jpg
+    title: college, art
+    tags:
+      - college
+      - art
+  - src: /img/gallery/this.jpg
+    title: inique
+    tags:
+      - college
+      - art
+  - src: /img/gallery/20130920dudness342t.jpg
+    title: Under the bridge
+    tags: []
