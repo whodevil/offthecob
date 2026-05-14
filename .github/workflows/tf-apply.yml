@@ -1,4 +1,4 @@
-name: "Terraform Apply"
+name: "OpenTofu Apply"
 on:
   workflow_call:
     secrets:
@@ -49,14 +49,14 @@ jobs:
         with:
           name: tfPlan-${{ inputs.environment }}
           path: terraform/
-      - uses: hashicorp/setup-terraform@v3
+      - uses: opentofu/setup-opentofu@v1
         with:
-          terraform_version: 1.2.0
-      - name: terraform apply
+          tofu_version: "1.11.7"
+      - name: tofu apply
         run: |
-          terraform fmt
-          terraform init
-          terraform validate
-          terraform workspace select ${{ inputs.environment }}
-          terraform apply -auto-approve tfPlan
+          tofu fmt
+          tofu init
+          tofu validate
+          tofu workspace select ${{ inputs.environment }}
+          tofu apply -auto-approve tfPlan
       - run: aws cloudfront create-invalidation --distribution-id ${{ secrets.DISTRIBUTION_ID }} --paths '/*'
