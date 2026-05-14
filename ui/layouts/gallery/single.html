@@ -23,7 +23,7 @@
     {{ end }}
   </div>
 
-  <div class="zero-results" style="display:none;" role="status">No images match this tag.</div>
+  <div class="zero-results" style="display:none;" role="status" aria-live="polite">No images match this tag.</div>
 
   <!-- Gallery grid -->
   <div class="gallery-grid">
@@ -31,7 +31,7 @@
       {{ $lowerTags := slice }}
       {{ range .tags }}{{ $lowerTags = $lowerTags | append (lower .) }}{{ end }}
       <div class="gallery-item" data-tags="{{ delimit $lowerTags " " }}" role="button" tabindex="0">
-        <img src="{{ .src }}" alt="{{ with .title }}{{ . }}{{ end }}" loading="lazy">
+        <img src="{{ .src }}" alt="{{ with .title }}{{ . }}{{ else }}Gallery image{{ end }}" loading="lazy">
         {{ with .title }}
           <div class="item-overlay">
             <span class="item-title">{{ . }}</span>
@@ -75,6 +75,10 @@
     overflow: hidden;
     cursor: pointer;
     position: relative;
+  }
+  .gallery-item:focus {
+    outline: 2px solid #333;
+    outline-offset: 2px;
   }
   .gallery-item img {
     width: 100%;
@@ -128,6 +132,10 @@
     cursor: pointer;
     border-radius: 4px;
     font-size: 0.85rem;
+  }
+  .tag-button:focus {
+    outline: 2px solid #333;
+    outline-offset: 2px;
   }
   .tag-button.active {
     background: #333;
@@ -185,7 +193,7 @@
     position: absolute;
     top: 1rem;
     right: 1rem;
-    background: transparent;
+    background: rgba(0,0,0,0.4);
     border: 1px solid #fff;
     color: #fff;
     padding: 0.4rem 0.8rem;
@@ -197,7 +205,7 @@
     position: absolute;
     top: 50%;
     transform: translateY(-50%);
-    background: transparent;
+    background: rgba(0,0,0,0.4);
     border: 1px solid #fff;
     color: #fff;
     padding: 0.5rem;
