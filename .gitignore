@@ -9,3 +9,4 @@ tf-env.zsh
 user.gradle
 **/.DS_Store
 docs/
+.superpowers/
