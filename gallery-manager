@@ -23,8 +23,11 @@ check_dep yq
 check_dep jq
 check_dep fzf
 
-# Get list of images already in gallery.yml (basename only)
-existing_images=()
+while true; do
+    clear
+
+    # Get list of images already in gallery.yml (basename only)
+    existing_images=()
 while IFS= read -r src; do
     [ -n "$src" ] && existing_images+=("$(basename "$src")")
 done < <(yq -r '.images[]?.src' "$GALLERY_YML")
@@ -113,32 +116,31 @@ if [ "$is_added" = false ]; then
     gum style --foreground 82 "This image is not in the gallery yet."
     echo ""
 
-    if ! gum confirm "Add this image to the gallery?"; then
+    if gum confirm "Add this image to the gallery?"; then
+        title=$(gum input --placeholder "Enter a display title..." --prompt "Title: ")
+        tags_input=$(gum input --placeholder "tag1, tag2, tag3" --prompt "Tags (comma-separated): ")
+
+        # Convert tags to JSON array
+        tags_json="[]"
+        if [ -n "$tags_input" ]; then
+            tags_json=$(echo "$tags_input" | tr ',' '\n' | sed 's/^[[:space:]]*//;s/[[:space:]]*$//' | jq -R . | jq -s 'map(select(length > 0))')
+        fi
+
+        # Append to gallery.yml (roundtrip through JSON for safe string handling)
+        tmp_file=$(mktemp)
+        yq -r . "$GALLERY_YML" | jq \
+            --arg src "$web_path" \
+            --arg title "$title" \
+            --argjson tags "$tags_json" \
+            '.images += [{"src": $src, "title": $title, "tags": $tags}]' | \
+            yq -y . > "$tmp_file"
+        mv "$tmp_file" "$GALLERY_YML"
+        tmp_file=""
+
+        gum style --foreground 82 "✅ Added $filename to gallery!"
+    else
         gum style --foreground 240 "Aborted. No changes made."
-        exit 0
     fi
-
-    title=$(gum input --placeholder "Enter a display title..." --prompt "Title: ")
-    tags_input=$(gum input --placeholder "tag1, tag2, tag3" --prompt "Tags (comma-separated): ")
-
-    # Convert tags to JSON array
-    tags_json="[]"
-    if [ -n "$tags_input" ]; then
-        tags_json=$(echo "$tags_input" | tr ',' '\n' | sed 's/^[[:space:]]*//;s/[[:space:]]*$//' | jq -R . | jq -s 'map(select(length > 0))')
-    fi
-
-    # Append to gallery.yml (roundtrip through JSON for safe string handling)
-    tmp_file=$(mktemp)
-    yq -r . "$GALLERY_YML" | jq \
-        --arg src "$web_path" \
-        --arg title "$title" \
-        --argjson tags "$tags_json" \
-        '.images += [{"src": $src, "title": $title, "tags": $tags}]' | \
-        yq -y . > "$tmp_file"
-    mv "$tmp_file" "$GALLERY_YML"
-    tmp_file=""
-
-    gum style --foreground 82 "✅ Added $filename to gallery!"
 else
     # Existing image: ask what to update
     gum style --foreground 33 "This image is already in the gallery."
@@ -188,3 +190,10 @@ else
             ;;
     esac
 fi
+
+echo ""
+if ! gum confirm "Continue working with another image?"; then
+    gum style --foreground 240 "Done. Goodbye!"
+    break
+fi
+done
