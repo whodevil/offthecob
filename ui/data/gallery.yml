@@ -98,3 +98,7 @@ images:
       - '2026'
       - art
       - digital
+  - src: /img/gallery/R0002632.png
+    title: Las Vegas
+    tags:
+      - '2026'
